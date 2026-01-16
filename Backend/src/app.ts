@@ -2,8 +2,12 @@ import { Hono } from 'hono';
 import { secureHeaders } from 'hono/secure-headers';
 import { cors } from 'hono/cors';
 import { compress } from 'hono/compress';
+import { logger } from './config/logger';
+import { logger as honoLogger } from "hono/logger";
 
 const app = new Hono();
+
+app.use("*", honoLogger());
 
 app.use('*', secureHeaders({
     contentSecurityPolicy: {
@@ -28,6 +32,9 @@ app.use(
 
 app.use('/v1/*', compress({encoding: 'gzip'}));
 
-app.get('/', c => c.text('Hello Bun!'));
+app.get('/', (c) => {
+  logger.info('Root endpoint accessed');
+  return c.text('Hello Bun!')
+});
 
 export default app;
