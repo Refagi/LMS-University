@@ -3,11 +3,15 @@ import { secureHeaders } from 'hono/secure-headers';
 import { cors } from 'hono/cors';
 import { compress } from 'hono/compress';
 import { logger } from './config/logger';
-import { logger as honoLogger } from "hono/logger";
+import { loggerHandler } from './config/loggerHandler';
+import { config } from './config/config';
+import { ErrorHandlers, ErrorConverters, errorHandler } from './middlewares/error';
 
 const app = new Hono();
 
-app.use("*", honoLogger());
+if (config.env !== 'test') {
+  app.use(loggerHandler)
+}
 
 app.use('*', secureHeaders({
     contentSecurityPolicy: {
@@ -36,5 +40,7 @@ app.get('/', (c) => {
   logger.info('Root endpoint accessed');
   return c.text('Hello Bun!')
 });
+
+app.onError(errorHandler);
 
 export default app;
