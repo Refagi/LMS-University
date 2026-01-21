@@ -36,11 +36,18 @@ app.use(
 
 app.use('/v1/*', compress({encoding: 'gzip'}));
 
-app.get('/', (c) => {
+app.get('/v1', (c) => {
   logger.info('Root endpoint accessed');
   return c.text('Hello Bun!')
 });
 
 app.onError(errorHandler);
+
+app.notFound((c) => {
+  return c.json({
+    code: 404,
+    message: 'Route not found'
+  }, 404);
+});
 
 export default app;

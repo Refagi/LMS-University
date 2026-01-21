@@ -49,7 +49,7 @@ class ErrorConverters extends ErrorMiddleware {
   private convertedError: ApiError;
   constructor(error: any){
     super();
-    if (!(error instanceof ApiError)) {
+    if (error instanceof ApiError) {
       this.convertedError = error;
       return
     }
@@ -124,10 +124,15 @@ class ErrorHandlers extends ErrorMiddleware {
   }
 }
 
+export const errorConverter = (err: any) => {
+  const converter = new ErrorConverters(err);
+  return converter.getError();
+}
+
 export const errorHandler = (err: Error, c: Context) => {
   const handler = new ErrorHandlers(err, c);
   if (err instanceof HTTPException) {
-    return c.json({ error: 'Request Error', details: [{ message: err.message }] }, err.status);
+    return c.json({code: err.status, message: err.message}, err.status);
   }
   return handler.handle();
 };
