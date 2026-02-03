@@ -1,0 +1,271 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  DOSEN
+  MAHASISWA
+}
+
+enum AssignmentType {
+  INDIVIDUAL
+  GROUP
+}
+
+enum SubmissionStatus {
+  SUBMITTED
+  LATE
+  MISSING
+}
+
+enum NotificationType {
+  SYSTEM
+  ASSIGNMENT
+  GRADE
+  ANNOUNCEMENT
+  FORUM
+}
+
+model User {
+  id        String   @id @default(cuid())
+  username  String
+  email     String   @unique
+  password  String
+  role      Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tokens        Token[]
+  profile       Profile?
+  courses       Course[]
+  enrollments   Enrollment[]
+  classes       Class[]
+  submissions   Submission[]
+  grades        Grade[]
+  forumThreads  ForumThread[]
+  forumPosts    ForumPost[]
+  forumComments ForumComment[]
+  announcements Announcement[]
+  notifications Notification[]
+  auditLogs     AuditLog[]
+}
+
+model Token {
+  id          String   @id @default(uuid())
+  token       String   @db.VarChar(400)
+  userId      String
+  User        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String
+  expires     DateTime
+  blacklisted Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Profile {
+  id           String  @id @default(cuid())
+  userId       String  @unique
+  noHP         String? @unique
+  npm          String? @unique
+  nidn         String? @unique
+  image        String?
+  faculty      String?
+  StudyProgram String?
+  generation   String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Semester {
+  id       String  @id @default(cuid())
+  name     String
+  year     Int
+  isActive Boolean @default(false)
+
+  courses Course[]
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  courseCode  String
+  title       String
+  sks         Int
+  description String
+  dosenId     String
+  semesterId  String
+  createdAt   DateTime @default(now())
+
+  dosen         User           @relation(fields: [dosenId], references: [id])
+  semester      Semester       @relation(fields: [semesterId], references: [id])
+  enrollments   Enrollment[]
+  materials     Material[]
+  assignments   Assignment[]
+  forumThreads  ForumThread[]
+  announcements Announcement[]
+}
+
+model Class {
+  userId     String
+  scheduleId String
+  room       String
+  capacity   Int?
+
+  user     User     @relation(fields: [userId], references: [id])
+  schedule Schedule @relation(fields: [scheduleId], references: [id])
+
+  @@id([userId, scheduleId])
+}
+
+model Schedule {
+  id    String @id @default(cuid())
+  daily String
+  UTS   String
+  UAS   String
+  UPM   String
+
+  classes Class[]
+}
+
+model Enrollment {
+  userId   String
+  CourseId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  course Course @relation(fields: [CourseId], references: [id])
+
+  @@id([userId, CourseId])
+}
+
+model Material {
+  id          String   @id @default(cuid())
+  CourseId    String
+  title       String
+  fileUrl     String
+  order       Int
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  course Course @relation(fields: [CourseId], references: [id])
+}
+
+model Assignment {
+  id          String         @id @default(cuid())
+  CourseId    String
+  title       String
+  description String
+  fileUrl     String
+  type        AssignmentType
+  deadline    DateTime
+  createdAt   DateTime       @default(now())
+
+  course      Course       @relation(fields: [CourseId], references: [id])
+  submissions Submission[]
+}
+
+model Submission {
+  id           String           @id @default(cuid())
+  assignmentId String
+  mahasiswaId  String
+  fileUrl      String?
+  status       SubmissionStatus
+  submittedAt  DateTime         @default(now())
+
+  assignment Assignment @relation(fields: [assignmentId], references: [id])
+  mahasiswa  User       @relation(fields: [mahasiswaId], references: [id])
+  grade      Grade?
+
+  @@unique([assignmentId, mahasiswaId])
+}
+
+model Grade {
+  id           String   @id @default(cuid())
+  submissionId String   @unique
+  mahasiswaId  String
+  score        Float
+  feedback     String?
+  gradedAt     DateTime @default(now())
+
+  submission Submission @relation(fields: [submissionId], references: [id])
+  mahasiswa  User       @relation(fields: [mahasiswaId], references: [id])
+}
+
+model ForumThread {
+  id        String   @id @default(cuid())
+  CourseId  String
+  authorId  String
+  title     String
+  createdAt DateTime @default(now())
+
+  course Course      @relation(fields: [CourseId], references: [id])
+  author User        @relation(fields: [authorId], references: [id])
+  posts  ForumPost[]
+}
+
+model ForumPost {
+  id        String   @id @default(cuid())
+  threadId  String
+  authorId  String
+  content   String
+  createdAt DateTime @default(now())
+
+  thread   ForumThread    @relation(fields: [threadId], references: [id])
+  author   User           @relation(fields: [authorId], references: [id])
+  comments ForumComment[]
+}
+
+model ForumComment {
+  id        String   @id @default(cuid())
+  postId    String
+  authorId  String
+  content   String
+  createdAt DateTime @default(now())
+
+  post   ForumPost @relation(fields: [postId], references: [id])
+  author User      @relation(fields: [authorId], references: [id])
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  CourseId  String
+  authorId  String
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+
+  course Course @relation(fields: [CourseId], references: [id])
+  author User   @relation(fields: [authorId], references: [id])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      NotificationType
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  actorId   String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  actor User @relation(fields: [actorId], references: [id])
+}
