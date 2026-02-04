@@ -6,6 +6,8 @@ import { logger } from '@/config/logger';
 import { loggerHandler } from '@/config/loggerHandler';
 import { config } from '@/config/config';
 import { ErrorHandlers, ErrorConverters, errorHandler } from '@/middlewares/error';
+import { authRateLimiter } from '@/middlewares/rateLimiter';
+import { xssSanitizeMiddleware } from '@/middlewares/sanitize';
 
 const app = new Hono();
 
@@ -24,6 +26,8 @@ app.use('*', secureHeaders({
     referrerPolicy: 'strict-origin-when-cross-origin',
 }));
 
+app.use('*', xssSanitizeMiddleware)
+
 app.use(
   '/v1/*',
   cors({
@@ -40,6 +44,10 @@ app.get('/v1', (c) => {
   logger.info('Root endpoint accessed');
   return c.text('Hello Bun!')
 });
+
+if(config.env === 'production') {
+  app.use('/v1', authRateLimiter)
+}
 
 app.onError(errorHandler);
 
