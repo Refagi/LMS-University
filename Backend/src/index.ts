@@ -2,7 +2,6 @@ import app from '@/app';
 import prisma from '../prisma/client';
 import { logger } from "@/config/logger";
 import { config } from '@/config/config';
-import { AuthControllers } from './controllers/auth.controller';
 
 export class Server {
   private server: any;

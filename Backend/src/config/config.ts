@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type{ TokenType } from '@/models/config.model';
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['production', 'development', 'test']).default('development'),
@@ -6,6 +7,11 @@ const envSchema = z.object({
   DATABASE_URL: z.string().trim().min(1, { message: 'DATABASE_URL is required' }),
   DATABASE_DIRECT_URL: z.string().trim().optional(),
   DATABASE_URL_TESTING: z.string().trim().optional(),
+  JWT_SECRET: z.string().trim().min(1, { message: 'JWT_SECRET is required' }),
+  JWT_ACCESS_EXPIRATION_MINUTES: z.coerce.number().default(30),
+  JWT_REFRESH_EXPIRATION_DAYS: z.coerce.number().default(30),
+  JWT_RESET_PASSWORD_EXPIRATION_MINUTES: z.coerce.number().default(5),
+  JWT_VERIFY_EMAIL_EXPIRATION_MINUTES: z.coerce.number().default(5),
 });
 
 class AppConfig {
@@ -53,6 +59,16 @@ class AppConfig {
       throw new Error("Database URL is not initilized");
     }
     return this.databaseUrl!;
+  }
+
+  get jwt(): TokenType{
+    return {
+      secret: this.typeEnv.JWT_SECRET,
+      accessExpirationMinutes: this.typeEnv.JWT_ACCESS_EXPIRATION_MINUTES,
+      refreshExpirationDays: this.typeEnv.JWT_REFRESH_EXPIRATION_DAYS,
+      resetPasswordExpirationMinutes: this.typeEnv.JWT_RESET_PASSWORD_EXPIRATION_MINUTES,
+      verifyEmailExpirationMinutes: this.typeEnv.JWT_VERIFY_EMAIL_EXPIRATION_MINUTES
+    }
   }
 }
 
