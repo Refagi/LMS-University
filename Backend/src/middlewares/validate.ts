@@ -1,16 +1,8 @@
 import { ApiError } from '@/utils/ApiError';
 import type { Context, Next } from 'hono';
-import type { ZodType } from 'zod';
-import { ZodError } from 'zod';
+import { ZodError, type ZodType } from 'zod';
 import httpStatusCode from 'http-status-codes';
-
-enum ValidationType {
-  BODY = 'body',
-  QUERY = 'query',
-  PARAM = 'param',
-  HEADER = 'header',
-  JSON = 'json'
-}
+import { ValidationType } from '@/models/auth.model';
 
 const parsers = {
   [ValidationType.BODY]: async (c: Context) => await c.req.parseBody(),
