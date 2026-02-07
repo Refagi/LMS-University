@@ -5,7 +5,7 @@ import { compress } from 'hono/compress';
 import { logger } from '@/config/logger';
 import { loggerHandler } from '@/config/loggerHandler';
 import { config } from '@/config/config';
-import { ErrorHandlers, ErrorConverters, errorHandler } from '@/middlewares/error';
+import { errorHandler } from '@/middlewares/error';
 import { authRateLimiter } from '@/middlewares/rateLimiter';
 import { xssSanitizeMiddleware } from '@/middlewares/sanitize';
 
@@ -57,5 +57,6 @@ app.notFound((c) => {
     message: 'Route not found'
   }, 404);
 });
+
 
 export default app;
