@@ -2,7 +2,7 @@ import StatusCodes from "http-status-codes";
 import { config } from "../config/config.js";
 import { logger } from "../config/logger.js";
 import { ApiError } from "../utils/ApiError.js";
-import type { Context, ErrorHandler } from "hono";
+import type { Context, Next } from "hono";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { ZodError } from 'zod';
 import { Prisma } from "../generated/prisma/client";
@@ -124,10 +124,10 @@ class ErrorHandlers extends ErrorMiddleware {
   }
 }
 
-export const errorConverter = (err: any) => {
-  const converter = new ErrorConverters(err);
-  return converter.getError();
-}
+// export const errorConverter = (err: any) => {
+//   const converter = new ErrorConverters(err);
+//   return converter.getError();
+// }
 
 export const errorHandler = (err: Error, c: Context) => {
   const handler = new ErrorHandlers(err, c);
@@ -136,5 +136,3 @@ export const errorHandler = (err: Error, c: Context) => {
   }
   return handler.handle();
 };
-
-export { ErrorConverters, ErrorHandlers };
