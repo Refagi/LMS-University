@@ -24,9 +24,4 @@ export class ApiError extends Error {
       Error.captureStackTrace(this, this.constructor);
     }
   }
-
-  // static fromZodError(error: ZodError, statusCode = 400) {
-  //   const issues = error.issues.map((i) => ({ message: i.message, path: i.path }));
-  //   return new ApiError(statusCode, issues);
-  // }
 }

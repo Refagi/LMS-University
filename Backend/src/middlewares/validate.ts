@@ -25,7 +25,7 @@ export class ValidateMiddlewares {
                 if (error instanceof SyntaxError) {
                     throw new ApiError(httpStatusCode.BAD_REQUEST, 'Invalid JSON format');
                 } else if (error instanceof ZodError) {
-                    throw new ApiError(httpStatusCode.BAD_REQUEST, error.issues.map(({ message }) => ({ message                                              })));
+                    throw new ApiError(httpStatusCode.BAD_REQUEST, error.issues.map(({ message }) => ({ message })));
                 } else {
                     throw error;
                 }
