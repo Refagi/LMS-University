@@ -118,6 +118,8 @@ export const ProfileScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   noHP: 'noHP',
+  placeOfBirth: 'placeOfBirth',
+  dateOfBirth: 'dateOfBirth',
   npm: 'npm',
   nidn: 'nidn',
   image: 'image',
