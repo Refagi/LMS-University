@@ -13,6 +13,12 @@ datasource db {
   provider = "postgresql"
 }
 
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+}
+
 enum Role {
   ADMIN
   DOSEN
@@ -40,12 +46,13 @@ enum NotificationType {
 
 model User {
   id        String   @id @default(cuid())
-  username  String
   email     String   @unique
-  password  String
+  password  String?
+  status    UserStatus @default(PENDING)
   role      Role
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isEmailVerified Boolean  @default(false)
 
   tokens        Token[]
   profile       Profile?
@@ -77,7 +84,8 @@ model Token {
 model Profile {
   id           String  @id @default(cuid())
   userId       String  @unique
-  noHP         String  @unique
+  fullName     String
+  phone        String  @unique
   placeOfBirth String
   dateOfBirth  String   
   npm          String? @unique

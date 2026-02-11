@@ -4,7 +4,8 @@ import prisma from '@/../prisma/client.js';
 type User = Prisma.UserGetPayload<{}>;
 type Token = Prisma.TokenGetPayload<{}>;
 
-export type BaseStudentRegist = Pick<User, "username" | "email" | "password" >;
+export type BaseStudentRegist = Pick<User, "email" | "password" | "status" | "role" >;
 
 export interface RequestCreateStudent extends BaseStudentRegist {}
 
+export type RequestUpdateStudent = Partial< Omit<User, 'id' | 'createdAt' | 'updatedAt'>> & {updatedAt?: Date;};

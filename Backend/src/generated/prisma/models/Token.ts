@@ -425,10 +425,6 @@ export type TokenUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.TokenScalarWhereInput | Prisma.TokenScalarWhereInput[]
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type TokenCreateWithoutUserInput = {
   id?: string
   token: string
