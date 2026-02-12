@@ -1,7 +1,7 @@
 import httpStatusCode from 'http-status-codes';
 import prisma from '../../prisma/client.js';
 import { ApiError } from '@/utils/ApiError.js';
-import { Prisma } from '@/generated/prisma/client.js';
+import { Prisma, Role } from '@/generated/prisma/client.js';
 import { config } from '@/config/config.js';
 import type { RequestCreateStudent,RequestUpdateStudent } from '@/models/student.model.js';
 import { TokenServices, StudentServices, AuthServices } from './index';
@@ -23,9 +23,9 @@ class StudentService {
     return user;
   };
 
-  static async getUserById(userId: string) {
+  static async getStudentById(userId: string) {
     const user: User | null = await prisma.user.findUnique({
-      where: {id: userId}
+      where: {id: userId, role: 'MAHASISWA'}
     });
 
     if (!user) {
@@ -34,16 +34,16 @@ class StudentService {
     return user;
   }
 
-  static async createStudent(userBody: RequestCreateStudent) {
+  static async createUser(userBody: RequestCreateStudent) {
 
-    const { email } = userBody
+    const { email, role } = userBody
 
     const student = await prisma.user.create({
       data: {
         email,
         status: 'PENDING',
         password: null,
-        role: 'MAHASISWA'
+        role
       }, 
     })
     return student;
@@ -51,7 +51,7 @@ class StudentService {
 
   static async setStudentPasswordandVerifyEmail(token: string, password: string) {
     const verifyEmailTokenDoc = await TokenServices.verifyToken(token, TokenTypes.VERIFY_EMAIL);
-    const user = await this.getUserById(verifyEmailTokenDoc.userId);
+    const user = await this.getStudentById(verifyEmailTokenDoc.userId);
     if (user.password) {
       throw new ApiError(httpStatusCode.BAD_REQUEST, 'Password sudah diatur sebelumnya!');
     }
@@ -75,6 +75,6 @@ class StudentService {
       })
     ]);
   }
-}
+};
 
 export default StudentService;

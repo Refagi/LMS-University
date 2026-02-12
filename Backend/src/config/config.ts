@@ -12,6 +12,12 @@ const envSchema = z.object({
   JWT_REFRESH_EXPIRATION_DAYS: z.coerce.number().default(30),
   JWT_RESET_PASSWORD_EXPIRATION_MINUTES: z.coerce.number().default(5),
   JWT_VERIFY_EMAIL_EXPIRATION_MINUTES: z.coerce.number().default(5),
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.coerce.number().optional(),
+  SMTP_USERNAME: z.string().optional(),
+  SMTP_PASSWORD: z.string().optional(),
+  EMAIL_FROM: z.string().optional(),
+  FRONTEND_URL: z.string(),
 });
 
 class AppConfig {
@@ -69,6 +75,23 @@ class AppConfig {
       resetPasswordExpirationMinutes: this.typeEnv.JWT_RESET_PASSWORD_EXPIRATION_MINUTES,
       verifyEmailExpirationMinutes: this.typeEnv.JWT_VERIFY_EMAIL_EXPIRATION_MINUTES
     }
+  }
+
+  get email() {
+    return {
+      smtp: {
+        host: this.typeEnv.SMTP_HOST,
+        port: this.typeEnv.SMTP_PORT,
+        auth: {
+          user: this.typeEnv.SMTP_USERNAME,
+          pass: this.typeEnv.SMTP_PASSWORD
+        },
+      },
+      from: this.typeEnv.EMAIL_FROM
+    }
+  }
+  get fe(): string {
+    return this.typeEnv.FRONTEND_URL;
   }
 }
 

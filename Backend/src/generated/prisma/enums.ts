@@ -19,6 +19,7 @@ export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]
 
 
 export const Role = {
+  SUPER_ADMIN: 'SUPER_ADMIN',
   ADMIN: 'ADMIN',
   DOSEN: 'DOSEN',
   MAHASISWA: 'MAHASISWA'
