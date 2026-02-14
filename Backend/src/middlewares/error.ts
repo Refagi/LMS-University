@@ -124,10 +124,10 @@ class ErrorHandlers extends ErrorMiddleware {
   }
 }
 
-// export const errorConverter = (err: any) => {
-//   const converter = new ErrorConverters(err);
-//   return converter.getError();
-// }
+export const errorConverter = (err: any) => {
+  const converter = new ErrorConverters(err);
+  return converter.getError();
+}
 
 export const errorHandler = (err: Error, c: Context) => {
   const handler = new ErrorHandlers(err, c);

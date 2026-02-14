@@ -37,7 +37,7 @@ export class EmailServices {
     await this.send({
       from: config.email.from,
       to: email,
-      subject: 'Verify Your Email',
+      subject: 'Verifikasi Email Anda - LMS University',
       html
     });
   }
