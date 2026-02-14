@@ -48,33 +48,6 @@ class StudentService {
     })
     return student;
   }
-
-  static async setStudentPasswordandVerifyEmail(token: string, password: string) {
-    const verifyEmailTokenDoc = await TokenServices.verifyToken(token, TokenTypes.VERIFY_EMAIL);
-    const user = await this.getStudentById(verifyEmailTokenDoc.userId);
-    if (user.password) {
-      throw new ApiError(httpStatusCode.BAD_REQUEST, 'Password sudah diatur sebelumnya!');
-    }
-    const hashedPassword = await Bun.password.hash(password, {
-      algorithm: 'bcrypt',
-      cost: 10
-    })
-
-    await prisma.$transaction([
-      prisma.user.update({
-        where: { id: user.id },
-        data: {
-          password: hashedPassword,
-          isEmailVerified: true,
-          status: 'ACTIVE',
-          updatedAt: new Date()
-        }
-      }),
-      prisma.token.deleteMany({
-        where: { userId: user.id, type: TokenTypes.VERIFY_EMAIL }
-      })
-    ]);
-  }
 };
 
 export default StudentService;

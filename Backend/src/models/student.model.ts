@@ -1,7 +1,7 @@
 import { Prisma } from '@/generated/prisma/client';
 import prisma from '@/../prisma/client.js';
 
-type User = Prisma.UserGetPayload<{}>;
+export type User = Prisma.UserGetPayload<{}>;
 type Token = Prisma.TokenGetPayload<{}>;
 
 export type BaseStudentRegist = Pick<User, "email" | "password" | "status" | "role" >;

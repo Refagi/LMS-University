@@ -25,7 +25,7 @@ export class Server {
         }
       });
 
-      logger.info(`Server running on http://localhost:${this.server.port}`);
+      logger.info(`Server running on http://localhost:${this.server.port}/v1`);
 
       this.registerProcessHandlers();
     } catch (error) {

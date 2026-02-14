@@ -8,6 +8,7 @@ import { config } from '@/config/config';
 import { errorHandler } from '@/middlewares/error';
 import { authRateLimiter } from '@/middlewares/rateLimiter';
 import { xssSanitizeMiddleware } from '@/middlewares/sanitize';
+import routes from '@/routes/v1/index.js'
 
 const app = new Hono();
 
@@ -40,7 +41,9 @@ app.use(
 
 app.use('/v1/*', compress({encoding: 'gzip'}));
 
-app.get('/v1', (c) => {
+app.route('/v1', routes)
+
+app.get('/', (c) => {
   logger.info('Root endpoint accessed');
   return c.text('Hello Bun!')
 });
