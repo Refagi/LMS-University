@@ -19,7 +19,7 @@ class StudentController {
     const { email, status, role } = c.get('parsedData') as User;
     const user = await StudentServices.createUser({ email, status, role, password: null });
     return c.json({message: 'User berhasil dibuat!', status: httpStatusCode.CREATED, data: user})
-  })
+  });
 };
 
 export default StudentController;

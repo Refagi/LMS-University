@@ -6,7 +6,7 @@ import { getStudent, createStudent } from "@/validations/student.validation.js";
 
 const adminRoute = new Hono();
 
-adminRoute.use('/getStudent/:id', validateMiddlewares.validateParam(getStudent), AdminController.getUsers);
+adminRoute.use('/getStudent/:id', auth('ADMIN'), validateMiddlewares.validateParam(getStudent), AdminController.getUsers);
 adminRoute.use('/createUser', auth('ADMIN'), validateMiddlewares.validate(createStudent), AdminController.createUser);
 
 export default adminRoute;
