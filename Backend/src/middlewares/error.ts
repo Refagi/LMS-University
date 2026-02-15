@@ -106,14 +106,20 @@ class ErrorHandlers extends ErrorMiddleware {
   }
 
   private logError() {
+    const req = this.context.req;
+    const method = req.method;
+    const url = req.url;
+
     if(config.env === 'development' ){
       logger.error(this.error);
     } else {
-      logger.error(this.error.message, {
-        statusCode: this.error.statusCode,
-        isOperational: this.error.isOperational,
-        stack: this.error.stack
-      });
+    logger.error( this.error.message, {
+      statusCode: this.error.statusCode,
+      isOperational: this.error.isOperational,
+      method,
+      url,
+      path: req.path,
+    });
     }
   }
 

@@ -20,7 +20,8 @@ class LoggerHandler {
       if(status  < 400) {
         const message = `${ipFormat}${method} ${url} ${status} - ${duration}ms`;
         logger.info(message);
-      } else {
+      } 
+      else {
         const errorMessage = c.get('errorMessage') || '';
         const message = `${ipFormat}${method} ${url} ${status} - ${duration}ms ${errorMessage ?  `message: ${errorMessage}`: ''}`;
         logger.error(message);
