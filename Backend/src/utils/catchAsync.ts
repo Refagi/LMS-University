@@ -12,9 +12,7 @@ export const catchAsync = (fn: AsyncHandler) => {
     try {
       return await fn(c, next);
     } catch (error: any) {
-        const convertedError = errorConverter(error);
-        throw new HTTPException(convertedError.statusCode as ContentfulStatusCode, { message: convertedError.message })
-      }
-
+      throw error
+    }
   };
 };
