@@ -4,8 +4,7 @@ import { catchAsync } from '../utils/catchAsync.js';
 import { TokenServices, StudentServices, EmailServices } from '@/services/index.js';
 import { TokenTypes } from '@/models/token.model.js';
 import type { User } from '@/models/student.model.js';
-import { type  Context, Hono } from 'hono'
-import { createStudent } from '@/validations/student.validation.js';
+import { type  Context } from 'hono'
 
 class StudentController {
   static getUsers = catchAsync(async (c: Context) => {

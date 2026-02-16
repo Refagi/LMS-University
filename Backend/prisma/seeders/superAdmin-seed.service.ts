@@ -29,6 +29,7 @@ export class SuperAdminSeedService {
           email: this.email,
           password: hashedPassword,
           role: Role.SUPER_ADMIN,
+          isEmailVerified: true,
           status: 'ACTIVE'}
     })
     logger.info('SUPER_ADMIN created successfully');
