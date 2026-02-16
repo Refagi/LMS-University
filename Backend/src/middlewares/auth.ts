@@ -8,7 +8,7 @@ import { config } from '@/config/config';
 import prisma from '../../prisma/client';
 
 
-export const auth = (requiredRole?: string): MiddlewareHandler => {
+export const auth = (requiredRole?: string[]): MiddlewareHandler => {
   return async (c, next) => {
     try {
       const authHeader = c.req.header('Authorization')
@@ -50,7 +50,7 @@ export const auth = (requiredRole?: string): MiddlewareHandler => {
         )
       }
 
-      if (requiredRole && user.role !== requiredRole) {
+      if (requiredRole && !user.role.includes(user.role)) {
         throw new HTTPException(
           httpStatusCode.FORBIDDEN as ContentfulStatusCode,
           { message: 'Forbidden!' }
