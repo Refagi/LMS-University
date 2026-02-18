@@ -48,6 +48,17 @@ export class AuthServices {
         return user;
     }
 
+    static async logout(refreshToken: string) {
+        const getRefreshToken = await prisma.token.findFirst({
+            where: { token: refreshToken, type: TokenTypes.REFRESH, blacklisted: false }
+        });
+        
+        if (!getRefreshToken) {
+            throw new ApiError(httpStatusCode.NOT_FOUND, 'Kamu telah logout!');
+        }
+        await prisma.token.delete({ where: { id: getRefreshToken.id } });
+    };
+
     static async refreshToken (tokens: string) {
         try {
             console.log('refresh console: ', tokens)

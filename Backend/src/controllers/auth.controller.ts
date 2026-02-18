@@ -5,7 +5,7 @@ import { TokenServices, StudentServices, EmailServices,  AuthServices } from '@/
 import { TokenTypes } from '@/models/token.model.js';
 import type { User } from '@/models/student.model.js';
 import { type  Context } from 'hono';
-import { setCookie } from 'hono/cookie'
+import { setCookie, getCookie, deleteCookie } from 'hono/cookie'
 
 
 class AuthController {
@@ -33,6 +33,17 @@ class AuthController {
         const { password: _, ...userWithoutPassword } = user;
 
         return c.json({status: httpStatusCode.OK, message: 'Login is successfully', data: { user: userWithoutPassword, tokens }})
+    });
+
+    static logout = catchAsync(async (c: Context) => {
+        const getCookies = getCookie(c, 'refreshToken');
+        if (!getCookies) {
+            throw new ApiError(httpStatusCode.NOT_FOUND, 'Kamu telah logout!');
+        }
+        await AuthServices.logout(getCookies);
+        deleteCookie(c, 'accessToken', { path: '/v1' });
+        deleteCookie(c, 'refreshToken', { path: '/v1' });
+        return c.json({status: httpStatusCode.OK, message: 'Logout is successfully'});
     });
 
     static activateAccount = catchAsync(async (c: Context) => {
