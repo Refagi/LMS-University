@@ -7,7 +7,7 @@ import prisma from '@/../prisma/client.js';
 import { ApiError } from '@/utils/ApiError';
 import type { User, Token, JwtPayload } from '@/models/token.model';
 import httpStatusCode from 'http-status-codes';
-import { StudentServices } from './index';
+import { AdminServices } from './index';
 
 type tokenTypes = 'access' | 'refresh'| 'resetPassword' |  'verifyEmail'
 
@@ -95,9 +95,13 @@ class TokenService {
     await this.saveToken(verifyEmailToken, userId, expires, TokenTypes.VERIFY_EMAIL);
     return verifyEmailToken;
   }
+  
 
   static async generateResetPasswordToken(email: string) {
-    const user = await StudentServices.getUserByEmail(email);
+    const user = await AdminServices.getUserByEmail(email);
+    if (!user) {
+      throw new ApiError(httpStatusCode.NOT_FOUND, 'User with this email does not exist!');
+    }
       await prisma.token.deleteMany({
         where: {
           userId: user.id,

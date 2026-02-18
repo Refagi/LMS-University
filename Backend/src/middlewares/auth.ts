@@ -6,13 +6,14 @@ import { HTTPException } from 'hono/http-exception';
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { config } from '@/config/config';
 import prisma from '../../prisma/client';
+import { getCookie } from 'hono/cookie'
 
 
 export const auth = (requiredRole?: string[]): MiddlewareHandler => {
   return async (c, next) => {
     try {
       const authHeader = c.req.header('Authorization')
-      const cookiesToken = c.req.header('accessToken')
+      const cookiesToken = getCookie(c, 'accessToken')
 
       let token: string | null = null
 

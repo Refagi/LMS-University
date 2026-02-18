@@ -4,7 +4,7 @@ import { SuperAdminSeedService } from './superAdmin-seed.service'
 async function main() {
   const seed = new SuperAdminSeedService(
     'superadmin@gmail.com',
-    'superadmin354'
+    'superadmin@354'
   )
 
   await seed.execute()
