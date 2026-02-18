@@ -16,3 +16,8 @@ export const login =
         }
       )
   });
+
+export const logout = z.object({
+  refreshToken: z.string().min(1, { message: 'refresh token must exist!' })
+})
+
