@@ -2,7 +2,7 @@ import nodemailer, { type Transporter, type SendMailOptions } from 'nodemailer';
 import { config } from '@/config/config.js';
 import { logger } from '@/config/logger.js';
 
-export class EmailServices {
+class EmailServices {
   private static transporter: Transporter;
 
   constructor() {
@@ -83,3 +83,5 @@ export class EmailServices {
     `;
   }
 }
+
+export default EmailServices;

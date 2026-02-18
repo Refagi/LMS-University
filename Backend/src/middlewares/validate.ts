@@ -33,7 +33,7 @@ export class ValidateMiddlewares {
          }
     }
     
-    validate = (schema: ZodType) => {
+    validateForm = (schema: ZodType) => {
         return this.createValidator(schema, ValidationType.BODY);
     };
     

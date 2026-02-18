@@ -12,42 +12,6 @@ type User = Prisma.UserGetPayload<{}>;
 type Token = Prisma.TokenGetPayload<{}>;
 
 class StudentService {
-  static async getUserByEmail(email: string) {
-    const user: User | null = await prisma.user.findUnique({
-      where: { email }  
-    });
-    
-    if (!user) {
-      throw new ApiError(httpStatusCode.NOT_FOUND, 'Mahasiswa tidak ditemukan');
-    }
-    return user;
-  };
-
-  static async getStudentById(userId: string) {
-    const user: User | null = await prisma.user.findUnique({
-      where: {id: userId, role: 'MAHASISWA'}
-    });
-
-    if (!user) {
-      throw new ApiError(httpStatusCode.NOT_FOUND, 'Mahasiswa tidak ditemukan');
-    }
-    return user;
-  }
-
-  static async createUser(userBody: RequestCreateStudent) {
-
-    const { email, role } = userBody
-
-    const student = await prisma.user.create({
-      data: {
-        email,
-        status: 'PENDING',
-        password: null,
-        role
-      }, 
-    })
-    return student;
-  }
 
   
 };

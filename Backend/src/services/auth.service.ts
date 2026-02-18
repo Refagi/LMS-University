@@ -1,4 +1,4 @@
-import { TokenServices, StudentServices } from './index';
+import { TokenServices, StudentServices, AdminServices } from './index';
 import { ApiError } from '@/utils/ApiError';
 import httpStatusCode from 'http-status-codes';
 import prisma from '@/../prisma/client';
@@ -19,6 +19,10 @@ export class AuthServices {
             throw new ApiError(httpStatusCode.UNAUTHORIZED, 'Email anda belum ter-vifikasi!');
         }
         
+        if(user.status !== 'ACTIVE') {
+            throw new ApiError(httpStatusCode.UNAUTHORIZED, 'Akun anda belum aktif, silahkan hubungi admin untuk mengaktifkan akun anda!');
+        }
+
         if (!user.password) {
             throw new ApiError(httpStatusCode.UNAUTHORIZED, 'Password belum diatur, silahkan atur password terlebih dahulu!');
         }
@@ -28,6 +32,19 @@ export class AuthServices {
         if (!validPassword) {
             throw new ApiError(httpStatusCode.UNAUTHORIZED, 'Email atau Password salah!');
         }
+        const existingLoginUser = await prisma.token.findFirst({
+            where: { userId: user.id, type: TokenTypes.REFRESH },
+            orderBy: { createdAt: 'desc' },
+        });
+        
+        if (existingLoginUser) {
+            await prisma.token.delete({
+                where: {
+                    id: existingLoginUser.id,
+                },
+            });
+        }
+        
         return user;
     }
 
@@ -48,10 +65,14 @@ export class AuthServices {
             throw new ApiError(httpStatusCode.UNAUTHORIZED, 'Silahkan lakukan verifikasi!');
         }
     };
+    
 
-    static async setStudentPasswordandVerifyEmail(token: string, password: string) {
+    static async activateAccount(token: string, password: string) {
         const verifyEmailTokenDoc = await TokenServices.verifyToken(token, TokenTypes.VERIFY_EMAIL);
-        const user = await StudentServices.getStudentById(verifyEmailTokenDoc.userId);
+        const user = await AdminServices.getUserById(verifyEmailTokenDoc.userId);
+        if(!user) {
+          throw new ApiError(httpStatusCode.NOT_FOUND, 'User tidak ditemukan!');
+        }
         if (user.password) {
             throw new ApiError(httpStatusCode.BAD_REQUEST, 'Password sudah diatur sebelumnya!');
         }
@@ -69,9 +90,8 @@ export class AuthServices {
                     status: 'ACTIVE',
                     updatedAt: new Date()
                 }}),
-                prisma.token.deleteMany({where: { userId: user.id, type: TokenTypes.VERIFY_EMAIL }
-                })
-            ]);
+            prisma.token.deleteMany({where: { userId: user.id, type: TokenTypes.VERIFY_EMAIL }})
+        ]);
     }
 }
 
