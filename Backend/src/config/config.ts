@@ -8,7 +8,7 @@ const envSchema = z.object({
   DATABASE_DIRECT_URL: z.string().trim().optional(),
   DATABASE_URL_TESTING: z.string().trim().optional(),
   JWT_SECRET: z.string().trim().min(1, { message: 'JWT_SECRET is required' }),
-  JWT_ACCESS_EXPIRATION_MINUTES: z.coerce.number().default(60),
+  JWT_ACCESS_EXPIRATION_MINUTES: z.coerce.number().default(1),
   JWT_REFRESH_EXPIRATION_DAYS: z.coerce.number().default(30),
   JWT_RESET_PASSWORD_EXPIRATION_MINUTES: z.coerce.number().default(5),
   JWT_VERIFY_EMAIL_EXPIRATION_MINUTES: z.coerce.number().default(5),

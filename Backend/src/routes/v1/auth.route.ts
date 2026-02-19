@@ -10,5 +10,6 @@ authRoute.post('/login', validateMiddlewares.validateJson(login), AuthController
 authRoute.post('/logout', AuthController.logout);
 authRoute.get('/verify-email', validateMiddlewares.validateQuery(verifyEmail), AuthController.verifyEmail);
 authRoute.post('/activate-account', validateMiddlewares.validateJson(login),  AuthController.activateAccount);
+authRoute.post('/refresh-token', AuthController.refreshToken);
 
 export default authRoute;

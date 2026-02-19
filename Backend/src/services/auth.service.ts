@@ -61,7 +61,6 @@ export class AuthServices {
 
     static async refreshToken (tokens: string) {
         try {
-            console.log('refresh console: ', tokens)
             const refreshTokenDoc = await TokenServices.verifyToken(tokens, TokenTypes.REFRESH);
             
             if (!refreshTokenDoc) {
