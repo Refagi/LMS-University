@@ -77,10 +77,35 @@ export class AuthServices {
         }
     };
     
-
-    static async activateAccount(token: string, password: string) {
+    static async verifyEmail (token: string) {
         const verifyEmailTokenDoc = await TokenServices.verifyToken(token, TokenTypes.VERIFY_EMAIL);
-        const user = await AdminServices.getUserById(verifyEmailTokenDoc.userId);
+        if (!verifyEmailTokenDoc) {
+            throw new ApiError(httpStatusCode.UNAUTHORIZED, 'Invalid Token!');
+        }
+        
+        const getUser = await AdminServices.getUserById(verifyEmailTokenDoc.userId);
+        if(!getUser) {
+            throw new ApiError(httpStatusCode.NOT_FOUND, 'User tidak ditemukan!');
+        }
+        
+        await prisma.$transaction([
+            prisma.user.update({
+                where: { id: verifyEmailTokenDoc.userId },
+                data: { isEmailVerified: true }
+            }),
+            
+            prisma.token.deleteMany({
+                where: {
+                    userId: getUser.id,
+                    type: TokenTypes.VERIFY_EMAIL
+                }
+            })
+        ]);
+    };
+    
+
+    static async activateAccount(email: string, password: string) {
+        const user = await AdminServices.getUserByEmail(email);
         if(!user) {
           throw new ApiError(httpStatusCode.NOT_FOUND, 'User tidak ditemukan!');
         }
@@ -104,6 +129,7 @@ export class AuthServices {
             prisma.token.deleteMany({where: { userId: user.id, type: TokenTypes.VERIFY_EMAIL }})
         ]);
     }
+
 }
 
 export default AuthServices;

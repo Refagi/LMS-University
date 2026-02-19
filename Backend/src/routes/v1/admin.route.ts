@@ -8,6 +8,5 @@ const adminRoute = new Hono();
 
 adminRoute.use('/getStudent/:id', auth(['SUPER_ADMIN', 'ADMIN']), validateMiddlewares.validateParam(getUser), AdminController.getUsers);
 adminRoute.use('/createUser', auth(['SUPER_ADMIN', 'ADMIN']), validateMiddlewares.validateJson(createUser), AdminController.createUser);
-adminRoute.get('/verify-email', AuthController.activateAccount)
 
 export default adminRoute;
