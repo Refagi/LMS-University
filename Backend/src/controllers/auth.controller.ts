@@ -60,6 +60,29 @@ class AuthController {
         return c.json({status: httpStatusCode.OK, message: 'Password berhasil diatur dan email berhasil diverifikasi', data: updatedUser})
     });
 
+    static refreshToken = catchAsync(async (c: Context) => {
+        const getToken = getCookie(c, 'refreshToken');
+        if (!getToken) {
+            throw new ApiError(httpStatusCode.UNAUTHORIZED, 'Refresh token tidak ditemukan!');
+        }
+        const newToken = await AuthServices.refreshToken(getToken);
+        setCookie(c, 'accessToken', newToken.access.token, {
+            httpOnly: true,
+            secure: Bun.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            path: '/v1',
+            maxAge: 60 * 60 // 60 minutes
+        });
+        setCookie(c, 'refreshToken', newToken.refresh.token, {
+            httpOnly: true,
+            secure: Bun.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            path: '/v1',
+            maxAge: 60 * 60 * 24 * 30 // 30 days
+        });
+        return c.json({status: httpStatusCode.OK, message: 'Token berhasil diperbarui', data: newToken});
+    })
+
 
 }
 
