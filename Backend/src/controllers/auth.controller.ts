@@ -3,7 +3,7 @@ import { ApiError } from '@/utils/ApiError.js';
 import { catchAsync } from '../utils/catchAsync.js';
 import { TokenServices, StudentServices, EmailServices,  AuthServices } from '@/services/index.js';
 import { TokenTypes } from '@/models/token.model.js';
-import type { User } from '@/models/student.model.js';
+import type { User } from '@/models/user.model.js';
 import { type  Context } from 'hono';
 import { setCookie, getCookie, deleteCookie } from 'hono/cookie'
 

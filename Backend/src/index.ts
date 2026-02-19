@@ -2,6 +2,7 @@ import app from '@/app';
 import prisma from '../prisma/client';
 import { logger } from "@/config/logger";
 import { config } from '@/config/config';
+import EmailServices from '@/services/email.service';
 
 export class Server {
   private server: any;
@@ -15,6 +16,8 @@ export class Server {
     try {
       await prisma.$connect();
       logger.info("Connected to Database");
+
+      await EmailServices.initialize();
 
       this.server = Bun.serve({
         port: this.port,
