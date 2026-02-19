@@ -6,6 +6,8 @@ import { TokenTypes } from '@/models/token.model.js';
 import type { User } from '@/models/user.model.js';
 import { type  Context } from 'hono';
 import { setCookie, getCookie, deleteCookie } from 'hono/cookie'
+import { verifyEmail } from '../validations/auth.validation';
+import { empty } from '../generated/prisma/internal/prismaNamespace';
 
 
 class AuthController {
@@ -46,9 +48,15 @@ class AuthController {
         return c.json({status: httpStatusCode.OK, message: 'Logout is successfully'});
     });
 
+    static verifyEmail = catchAsync(async (c: Context) => {
+        const { token } = c.get('parsedData') as { token: string };
+        await AuthServices.verifyEmail(token);
+        return c.json({status: httpStatusCode.OK, message: 'Email berhasil diverifikasi'})
+    })
+
     static activateAccount = catchAsync(async (c: Context) => {
-        const { token, password } = c.get('parsedData') as { token: string, password: string };
-        const updatedUser = await AuthServices.activateAccount(token, password);
+        const { email, password } = c.get('parsedData') as { email: string, password: string };
+        const updatedUser = await AuthServices.activateAccount(email, password);
         return c.json({status: httpStatusCode.OK, message: 'Password berhasil diatur dan email berhasil diverifikasi', data: updatedUser})
     });
 
