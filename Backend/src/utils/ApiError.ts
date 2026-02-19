@@ -1,5 +1,3 @@
-import { ZodError } from 'zod';
-
 export type ApiErrorMessage = string | string[] | Array<{ message: string; path?: Array<string | number> }>;
 
 export class ApiError extends Error {

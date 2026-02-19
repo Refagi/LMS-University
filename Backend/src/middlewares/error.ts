@@ -64,6 +64,11 @@ class ErrorConverters extends ErrorMiddleware {
         logger.info('handlePrismaError');
         this.convertedError = this.handlePrismaError(error);
       } else {
+        
+        if (config.env === 'development') {
+          console.error('Unhandled Error Type:', error.constructor.name);
+          console.error('Error details:', error);
+        }
          const statusCode = error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
          const message = error.message || 'Internal server error';
          this.convertedError = new ApiError(statusCode, message, false, error.stack);
@@ -109,16 +114,38 @@ class ErrorHandlers extends ErrorMiddleware {
     const req = this.context.req;
     const method = req.method;
     const url = req.url;
+    const path = req.path;
 
     if(config.env === 'development' ){
-      logger.error(this.error);
+      console.error('Request Info:');
+      console.error(`Method: ${method}`);
+      console.error(`URL: ${url}`);
+      console.error(`Path: ${path}`);
+      console.error('Error Details:');
+      console.error(`Status Code: ${this.error.statusCode}`);
+      console.error(`Message: ${this.error.message}`);
+      console.error(`Operational: ${this.error.isOperational}`);
+    
+    if (this.error.stack) {
+      console.error('Stack Trace:');
+      const stackLines = this.error.stack.split('\n').slice(0, 10);
+      stackLines.forEach(line => console.error(`   ${line}`));
+    }
+    
+    logger.error(this.error, {
+      statusCode: this.error.statusCode,
+      isOperational: this.error.isOperational,
+      method,
+      url,
+      path,
+    });
     } else {
     logger.error( this.error.message, {
       statusCode: this.error.statusCode,
       isOperational: this.error.isOperational,
       method,
       url,
-      path: req.path,
+      path
     });
     }
   }

@@ -3,7 +3,7 @@ import prisma from '../../prisma/client.js';
 import { ApiError } from '@/utils/ApiError.js';
 import { Prisma } from '@/generated/prisma/client.js';
 import { config } from '@/config/config.js';
-import type { RequestCreateStudent,RequestUpdateStudent } from '@/models/student.model.js';
+import type { RequestCreateUser } from '@/models/user.model.js';
 import { TokenServices, StudentServices, AuthServices } from './index';
 import { TokenTypes } from '@/models/token.model.js';
 
@@ -24,7 +24,7 @@ class AdminServices {
     return user;
   }
 
-  static async createUser(userBody: RequestCreateStudent) {
+  static async createUser(userBody: RequestCreateUser) {
 
     const { email, role } = userBody
 

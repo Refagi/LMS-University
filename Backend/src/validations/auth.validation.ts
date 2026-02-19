@@ -21,3 +21,8 @@ export const logout = z.object({
   refreshToken: z.string().min(1, { message: 'refresh token must exist!' })
 })
 
+export const verifyEmail =
+  z.object({
+    token: z.string().min(1, { message: 'verify token must exist!' })
+  })
+

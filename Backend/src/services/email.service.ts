@@ -3,35 +3,46 @@ import { config } from '@/config/config.js';
 import { logger } from '@/config/logger.js';
 
 class EmailServices {
-  private static transporter: Transporter;
+  private static transporter: Transporter = nodemailer.createTransport(
+    config.email.smtp as SendMailOptions
+  );
 
-  constructor() {
-    EmailServices.transporter = nodemailer.createTransport( config.email.smtp as SendMailOptions);
+  private static isInitialized = false;
 
-    this.verifyConnection();
+  static async initialize(): Promise<void> {
+    if (this.isInitialized) {
+      logger.info('Email service already initialized');
+      return;
+    }
+
+    if (config.env === 'test') {
+      logger.info('Email service skipped in test environment');
+      return;
+    }
+
+    try {
+      await this.transporter.verify();
+      logger.info('Email server connected successfully');
+      this.isInitialized = true;
+    } catch (error: any) {
+      logger.warn(`Unable to connect to email server: ${error.message}`);
+      logger.warn('Check your SMTP configuration in .env file');
+    }
   }
 
-  private verifyConnection(): void {
-    if (config.env === 'test') return;
-
-    EmailServices.transporter
-      .verify()
-      .then(() => logger.info('Email server connected'))
-      .catch(() =>
-        logger.warn(
-          'Unable to connect to email server. Check SMTP configuration'
-        )
-      );
-  }
-
-  protected static async send(options: SendMailOptions): Promise<void> {
-    const response = await this.transporter.sendMail(options);
-    logger.info(`Email sent: ${response.messageId}`);
+  private static async send(options: SendMailOptions): Promise<void> {
+    try {
+      const response = await this.transporter.sendMail(options);
+      logger.info(`Email sent successfully: ${response.messageId}`);
+    } catch (error: any) {
+      logger.error(`Failed to send email: ${error.message}`);
+      throw error;
+    }
   }
   
   static async sendVerification(email: string, token: string): Promise<void> {
-    const verificationUrl = `${config.fe}/verify-email?token=${token}`;
-
+    // const verificationUrl = `${config.fe}/verify-email?token=${token}`;
+    const verificationUrl = `http://localhost:3000/v1/auth/verify-email?token=${token}`;
     const html = this.buildTemplate(verificationUrl);
 
     await this.send({
@@ -53,7 +64,7 @@ class EmailServices {
           <table width="600" style="background:#ffffff;border-radius:8px;">
             <tr>
               <td style="padding:20px;text-align:center;font-family:Arial;">
-                <h2 style="color:#272343;">Calculator Food Nutritions</h2>
+                <h2 style="color:#272343;">LMS University</h2>
                 <p>Silakan verifikasi email Anda untuk mengaktifkan akun Anda.</p>
 
                 <a href="${verificationUrl}"
