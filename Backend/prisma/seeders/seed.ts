@@ -1,13 +1,19 @@
-import prisma from '../client'
-import { SuperAdminSeedService } from './superAdmin-seed.service'
+import prisma from '../client';
+import { SuperAdminSeedService } from './superAdmin-seed.service';
+import { AdminSeedService } from './admin-seed.service';
 
 async function main() {
-  const seed = new SuperAdminSeedService(
+  const superAdminSeed = new SuperAdminSeedService(
     'superadmin@gmail.com',
     'superadmin@354'
   )
+  const adminSeed = new AdminSeedService(
+    'admin1@gmail.com',
+    'admin1@354'
+  )
 
-  await seed.execute()
+  await superAdminSeed.execute()
+  await adminSeed.execute()
 }
 
 main()

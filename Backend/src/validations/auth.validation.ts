@@ -3,7 +3,6 @@ import { z } from 'zod'
 export const login = 
     z.object({
     email: z
-      .string()
       .email({ message: 'Email must be a valid email address' })
       .refine((email) => email.endsWith('@gmail.com'), { message: 'Email must end with @gmail.com' }),
     password: z

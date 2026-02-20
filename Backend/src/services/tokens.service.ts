@@ -81,7 +81,7 @@ class TokenService {
   static async generateVeryfyEmailToken(users: User) {
     const userId = users.id;
     if (!userId) {
-      throw new ApiError(httpStatusCode.NOT_FOUND, 'User is not found');
+      throw new ApiError(httpStatusCode.NOT_FOUND, 'Pengguna tidak ditemukan!');
     }
     await prisma.token.deleteMany({
       where: {
@@ -100,7 +100,7 @@ class TokenService {
   static async generateResetPasswordToken(email: string) {
     const user = await AdminServices.getUserByEmail(email);
     if (!user) {
-      throw new ApiError(httpStatusCode.NOT_FOUND, 'User with this email does not exist!');
+      throw new ApiError(httpStatusCode.NOT_FOUND, 'Pengguna dengan email ini tidak ditemukan!');
     }
       await prisma.token.deleteMany({
         where: {
