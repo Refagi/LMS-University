@@ -64,6 +64,19 @@ class EmailServices {
       html
     });
   }
+
+  static async sendVerificationUpdateEmail(newEmail: string, token: string): Promise<void> {
+    // const verificationUrl = `${config.fe}/update-email?token=${token}`;
+    const verificationUrl = `http://localhost:3000/v1/user/verify-update-email?token=${token}`;
+    const html = this.buildUpdateEmailVerificationTemplate(verificationUrl);
+
+    await this.send({
+      from: config.email.from,
+      to: newEmail,
+      subject: 'Update Email - LMS University',
+      html
+    });
+  }
   
 
   private static buildTemplate(verificationUrl: string): string {
@@ -175,6 +188,77 @@ class EmailServices {
 </html>
   `;
 }
+
+private static buildUpdateEmailVerificationTemplate(verificationUrl: string): string {
+  return `
+<!DOCTYPE html>
+<html>
+  <body style="margin:0;padding:0;background-color:#f4f4f4;">
+    <table width="100%">
+      <tr>
+        <td align="center" style="padding:20px;">
+          <table width="600" style="background:#ffffff;border-radius:8px;">
+            <tr>
+              <td style="padding:30px;text-align:center;font-family:Arial, sans-serif;">
+                
+                <h2 style="color:#272343;margin-bottom:10px;">
+                  LMS University
+                </h2>
+
+                <h3 style="color:#333;margin-bottom:20px;">
+                  Konfirmasi Perubahan Email
+                </h3>
+
+                <p style="color:#555;font-size:14px;line-height:1.6;">
+                  Kami menerima permintaan untuk mengubah alamat email akun Anda.
+                  Untuk menyelesaikan proses ini, silakan konfirmasi email baru Anda
+                  dengan mengklik tombol di bawah ini.
+                </p>
+
+                <a href="${verificationUrl}"
+                  style="
+                    display:inline-block;
+                    margin-top:20px;
+                    padding:12px 24px;
+                    background:#3a86ff;
+                    color:#ffffff;
+                    text-decoration:none;
+                    border-radius:5px;
+                    font-weight:bold;
+                  ">
+                  Verifikasi Email Baru
+                </a>
+
+                <p style="color:#555;font-size:13px;margin-top:25px;">
+                  Link ini akan kedaluwarsa dalam <strong>15 menit</strong>.
+                </p>
+
+                <p style="color:#777;font-size:12px;margin-top:20px;">
+                  Jika tombol tidak berfungsi, salin dan tempel URL berikut ke browser Anda:
+                </p>
+
+                <p style="word-break:break-all;color:#272343;font-size:12px;">
+                  ${verificationUrl}
+                </p>
+
+                <hr style="margin:30px 0;border:none;border-top:1px solid #eee;" />
+
+                <p style="font-size:12px;color:#999;">
+                  Jika Anda tidak meminta perubahan email, abaikan email ini.
+                  Email akun Anda tidak akan berubah sampai Anda mengonfirmasi.
+                </p>
+
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+  `;
+}
+
 
 
 }

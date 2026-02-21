@@ -7,7 +7,7 @@ export const login =
       .refine((email) => email.endsWith('@gmail.com'), { message: 'Email must end with @gmail.com' }),
     password: z
       .string()
-      .min(8, { message: 'Password must be at least 8 characters' })
+      .min(12, { message: 'Password must be at least 12 characters' })
       .refine(
         (password) => /[A-Za-z]/.test(password) && /\d/.test(password) && /[!@#$%^&*(),.?":{}|<>]/.test(password),
         {

@@ -8,7 +8,7 @@ export type BaseUserRegist = Pick<User, "email" | "role" >;
 
 export interface RequestCreateUser extends BaseUserRegist {}
 
-export interface UpdateUserEmailByAdmin {
+export interface UpdateUserEmail {
     userId: string;
     newEmail: string;
 }

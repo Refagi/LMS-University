@@ -101,7 +101,6 @@ export class AuthServices {
             })
         ]);
     };
-    
 
     static async activateAccount(email: string, password: string) {
         const user = await AdminServices.getUserByEmail(email);

@@ -6,10 +6,9 @@ import { getUser, createUser, updateUserEmailByAdmin, updateUserStatusByAdmin } 
 
 const adminRoute = new Hono();
 
-adminRoute.use('/getStudent/:id', auth(['SUPER_ADMIN', 'ADMIN']), validateMiddlewares.validateParam(getUser), AdminController.getUsers);
-adminRoute.use('/createUser', auth(['SUPER_ADMIN', 'ADMIN']), validateMiddlewares.validateJson(createUser), AdminController.createUser);
-adminRoute.use('/updateUserEmail/:id', auth(['SUPER_ADMIN', 'ADMIN']), validateMiddlewares.validateJson(updateUserEmailByAdmin), AdminController.updateUserEmailByAdmin);
-adminRoute.use('/updateUserStatus/:id', auth(['SUPER_ADMIN', 'ADMIN']), validateMiddlewares.validateJson(updateUserStatusByAdmin), AdminController.updateUserStatusByAdmin);
+adminRoute.get('/getStudent/:id', auth(['SUPER_ADMIN', 'ADMIN']), validateMiddlewares.validateParam(getUser), AdminController.getUsers);
+adminRoute.post('/createUser', auth(['SUPER_ADMIN', 'ADMIN']), validateMiddlewares.validateJson(createUser), AdminController.createUser);
+adminRoute.patch('/updateUserStatus/:id', auth(['SUPER_ADMIN', 'ADMIN']), validateMiddlewares.validateJson(updateUserStatusByAdmin), AdminController.updateUserStatusByAdmin);
 
 
 export default adminRoute;
