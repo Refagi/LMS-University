@@ -29,6 +29,7 @@ export type TokenMinAggregateOutputType = {
   token: string | null
   userId: string | null
   type: string | null
+  newEmail: string | null
   expires: Date | null
   blacklisted: boolean | null
   createdAt: Date | null
@@ -40,6 +41,7 @@ export type TokenMaxAggregateOutputType = {
   token: string | null
   userId: string | null
   type: string | null
+  newEmail: string | null
   expires: Date | null
   blacklisted: boolean | null
   createdAt: Date | null
@@ -51,6 +53,7 @@ export type TokenCountAggregateOutputType = {
   token: number
   userId: number
   type: number
+  newEmail: number
   expires: number
   blacklisted: number
   createdAt: number
@@ -64,6 +67,7 @@ export type TokenMinAggregateInputType = {
   token?: true
   userId?: true
   type?: true
+  newEmail?: true
   expires?: true
   blacklisted?: true
   createdAt?: true
@@ -75,6 +79,7 @@ export type TokenMaxAggregateInputType = {
   token?: true
   userId?: true
   type?: true
+  newEmail?: true
   expires?: true
   blacklisted?: true
   createdAt?: true
@@ -86,6 +91,7 @@ export type TokenCountAggregateInputType = {
   token?: true
   userId?: true
   type?: true
+  newEmail?: true
   expires?: true
   blacklisted?: true
   createdAt?: true
@@ -170,6 +176,7 @@ export type TokenGroupByOutputType = {
   token: string
   userId: string
   type: string
+  newEmail: string | null
   expires: Date
   blacklisted: boolean
   createdAt: Date
@@ -202,6 +209,7 @@ export type TokenWhereInput = {
   token?: Prisma.StringFilter<"Token"> | string
   userId?: Prisma.StringFilter<"Token"> | string
   type?: Prisma.StringFilter<"Token"> | string
+  newEmail?: Prisma.StringNullableFilter<"Token"> | string | null
   expires?: Prisma.DateTimeFilter<"Token"> | Date | string
   blacklisted?: Prisma.BoolFilter<"Token"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Token"> | Date | string
@@ -214,6 +222,7 @@ export type TokenOrderByWithRelationInput = {
   token?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  newEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   expires?: Prisma.SortOrder
   blacklisted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -229,6 +238,7 @@ export type TokenWhereUniqueInput = Prisma.AtLeast<{
   token?: Prisma.StringFilter<"Token"> | string
   userId?: Prisma.StringFilter<"Token"> | string
   type?: Prisma.StringFilter<"Token"> | string
+  newEmail?: Prisma.StringNullableFilter<"Token"> | string | null
   expires?: Prisma.DateTimeFilter<"Token"> | Date | string
   blacklisted?: Prisma.BoolFilter<"Token"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Token"> | Date | string
@@ -241,6 +251,7 @@ export type TokenOrderByWithAggregationInput = {
   token?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  newEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   expires?: Prisma.SortOrder
   blacklisted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -258,6 +269,7 @@ export type TokenScalarWhereWithAggregatesInput = {
   token?: Prisma.StringWithAggregatesFilter<"Token"> | string
   userId?: Prisma.StringWithAggregatesFilter<"Token"> | string
   type?: Prisma.StringWithAggregatesFilter<"Token"> | string
+  newEmail?: Prisma.StringNullableWithAggregatesFilter<"Token"> | string | null
   expires?: Prisma.DateTimeWithAggregatesFilter<"Token"> | Date | string
   blacklisted?: Prisma.BoolWithAggregatesFilter<"Token"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Token"> | Date | string
@@ -268,6 +280,7 @@ export type TokenCreateInput = {
   id?: string
   token: string
   type: string
+  newEmail?: string | null
   expires: Date | string
   blacklisted?: boolean
   createdAt?: Date | string
@@ -280,6 +293,7 @@ export type TokenUncheckedCreateInput = {
   token: string
   userId: string
   type: string
+  newEmail?: string | null
   expires: Date | string
   blacklisted?: boolean
   createdAt?: Date | string
@@ -290,6 +304,7 @@ export type TokenUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   token?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  newEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expires?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   blacklisted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -302,6 +317,7 @@ export type TokenUncheckedUpdateInput = {
   token?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  newEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expires?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   blacklisted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -313,6 +329,7 @@ export type TokenCreateManyInput = {
   token: string
   userId: string
   type: string
+  newEmail?: string | null
   expires: Date | string
   blacklisted?: boolean
   createdAt?: Date | string
@@ -323,6 +340,7 @@ export type TokenUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   token?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  newEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expires?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   blacklisted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -334,6 +352,7 @@ export type TokenUncheckedUpdateManyInput = {
   token?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  newEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expires?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   blacklisted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -355,6 +374,7 @@ export type TokenCountOrderByAggregateInput = {
   token?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  newEmail?: Prisma.SortOrder
   expires?: Prisma.SortOrder
   blacklisted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -366,6 +386,7 @@ export type TokenMaxOrderByAggregateInput = {
   token?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  newEmail?: Prisma.SortOrder
   expires?: Prisma.SortOrder
   blacklisted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -377,6 +398,7 @@ export type TokenMinOrderByAggregateInput = {
   token?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  newEmail?: Prisma.SortOrder
   expires?: Prisma.SortOrder
   blacklisted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -429,6 +451,7 @@ export type TokenCreateWithoutUserInput = {
   id?: string
   token: string
   type: string
+  newEmail?: string | null
   expires: Date | string
   blacklisted?: boolean
   createdAt?: Date | string
@@ -439,6 +462,7 @@ export type TokenUncheckedCreateWithoutUserInput = {
   id?: string
   token: string
   type: string
+  newEmail?: string | null
   expires: Date | string
   blacklisted?: boolean
   createdAt?: Date | string
@@ -479,6 +503,7 @@ export type TokenScalarWhereInput = {
   token?: Prisma.StringFilter<"Token"> | string
   userId?: Prisma.StringFilter<"Token"> | string
   type?: Prisma.StringFilter<"Token"> | string
+  newEmail?: Prisma.StringNullableFilter<"Token"> | string | null
   expires?: Prisma.DateTimeFilter<"Token"> | Date | string
   blacklisted?: Prisma.BoolFilter<"Token"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Token"> | Date | string
@@ -489,6 +514,7 @@ export type TokenCreateManyUserInput = {
   id?: string
   token: string
   type: string
+  newEmail?: string | null
   expires: Date | string
   blacklisted?: boolean
   createdAt?: Date | string
@@ -499,6 +525,7 @@ export type TokenUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   token?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  newEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expires?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   blacklisted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -509,6 +536,7 @@ export type TokenUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   token?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  newEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expires?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   blacklisted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -519,6 +547,7 @@ export type TokenUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   token?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  newEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expires?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   blacklisted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -532,6 +561,7 @@ export type TokenSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   token?: boolean
   userId?: boolean
   type?: boolean
+  newEmail?: boolean
   expires?: boolean
   blacklisted?: boolean
   createdAt?: boolean
@@ -544,6 +574,7 @@ export type TokenSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   token?: boolean
   userId?: boolean
   type?: boolean
+  newEmail?: boolean
   expires?: boolean
   blacklisted?: boolean
   createdAt?: boolean
@@ -556,6 +587,7 @@ export type TokenSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   token?: boolean
   userId?: boolean
   type?: boolean
+  newEmail?: boolean
   expires?: boolean
   blacklisted?: boolean
   createdAt?: boolean
@@ -568,13 +600,14 @@ export type TokenSelectScalar = {
   token?: boolean
   userId?: boolean
   type?: boolean
+  newEmail?: boolean
   expires?: boolean
   blacklisted?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TokenOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "token" | "userId" | "type" | "expires" | "blacklisted" | "createdAt" | "updatedAt", ExtArgs["result"]["token"]>
+export type TokenOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "token" | "userId" | "type" | "newEmail" | "expires" | "blacklisted" | "createdAt" | "updatedAt", ExtArgs["result"]["token"]>
 export type TokenInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   User?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -595,6 +628,7 @@ export type $TokenPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     token: string
     userId: string
     type: string
+    newEmail: string | null
     expires: Date
     blacklisted: boolean
     createdAt: Date
@@ -1027,6 +1061,7 @@ export interface TokenFieldRefs {
   readonly token: Prisma.FieldRef<"Token", 'String'>
   readonly userId: Prisma.FieldRef<"Token", 'String'>
   readonly type: Prisma.FieldRef<"Token", 'String'>
+  readonly newEmail: Prisma.FieldRef<"Token", 'String'>
   readonly expires: Prisma.FieldRef<"Token", 'DateTime'>
   readonly blacklisted: Prisma.FieldRef<"Token", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Token", 'DateTime'>

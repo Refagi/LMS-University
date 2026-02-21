@@ -15,12 +15,12 @@ export class AdminSeedService {
 
     const hashedPassword = await this.hashPassword(this.password)
     await prisma.user.upsert({
-        where: { email: this.email, role: Role.ADMIN },
+        where: { email: this.email, role: Role.MAHASISWA },
         update: {},
         create: {
           email: this.email,
           password: hashedPassword,
-          role: Role.ADMIN,
+          role: Role.MAHASISWA,
           isEmailVerified: true,
           status: 'ACTIVE'}
     })

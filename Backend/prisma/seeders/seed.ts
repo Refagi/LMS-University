@@ -1,6 +1,7 @@
 import prisma from '../client';
 import { SuperAdminSeedService } from './superAdmin-seed.service';
 import { AdminSeedService } from './admin-seed.service';
+import { UserSeedService } from './user-seed.service';
 
 async function main() {
   const superAdminSeed = new SuperAdminSeedService(
@@ -8,12 +9,15 @@ async function main() {
     'superadmin@354'
   )
   const adminSeed = new AdminSeedService(
-    'admin1@gmail.com',
-    'admin1@354'
+    'zambhrong33@gmail.com',
+    'zambhrong@354'
   )
+  const userSeed = new UserSeedService(10)
 
-  await superAdminSeed.execute()
+
+  // await superAdminSeed.execute()
   await adminSeed.execute()
+  // await userSeed.execute()
 }
 
 main()

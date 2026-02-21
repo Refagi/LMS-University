@@ -76,6 +76,7 @@ model Token {
   userId      String
   User        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   type        String
+  newEmail    String?
   expires     DateTime
   blacklisted Boolean  @default(false)
   createdAt   DateTime @default(now())

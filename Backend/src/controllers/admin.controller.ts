@@ -3,7 +3,7 @@ import { ApiError } from '@/utils/ApiError.js';
 import { catchAsync } from '../utils/catchAsync.js';
 import { TokenServices, StudentServices, EmailServices, AdminServices } from '@/services/index.js';
 import { TokenTypes } from '@/models/token.model.js';
-import type { RequestCreateUser, User, UpdateUserEmailByAdmin, UpdateUserStatusAdmin } from '@/models/user.model.js';
+import type { RequestCreateUser, User, UpdateUserStatusAdmin } from '@/models/user.model.js';
 import { type  Context } from 'hono'
 
 class AdminController {
@@ -39,14 +39,6 @@ class AdminController {
     return c.json({message: 'User berhasil dibuat!', status: httpStatusCode.CREATED, data: safeUser})
   });
 
-  static updateUserEmailByAdmin = catchAsync(async (c: Context) => {
-    const { userId, newEmail } = c.get('parsedData') as UpdateUserEmailByAdmin;
-    const updateUser = await AdminServices.updateUserEmailByAdmin({ userId, newEmail });
-    if (!updateUser) {
-     throw new ApiError(httpStatusCode.BAD_REQUEST, 'Gagal memperbarui email user!'); 
-    }
-    return c.json({status: httpStatusCode.OK, message: 'Email berhasil diperbarui!', data: updateUser})
-  });
 
   static updateUserStatusByAdmin = catchAsync(async (c: Context) => {
     const { userId, status } = c.get('parsedData') as UpdateUserStatusAdmin;

@@ -3,7 +3,7 @@ import prisma from '../../prisma/client.js';
 import { ApiError } from '@/utils/ApiError.js';
 import { Prisma } from '@/generated/prisma/client.js';
 import { config } from '@/config/config.js';
-import type { RequestCreateUser, UpdateUserEmailByAdmin, UpdateUserStatusAdmin } from '@/models/user.model.js';
+import type { RequestCreateUser, UpdateUserStatusAdmin } from '@/models/user.model.js';
 import { TokenServices, StudentServices, AuthServices, EmailServices } from './index';
 import { TokenTypes } from '@/models/token.model.js';
 
@@ -37,21 +37,6 @@ class AdminServices {
       }, 
     })
     return student;
-  }
-
-  static async updateUserEmailByAdmin (userBody: UpdateUserEmailByAdmin) {
-    const { userId, newEmail } = userBody;
-    const getUser = await this.getUserById(userId);
-    if(!getUser) {
-      throw new ApiError(httpStatusCode.NOT_FOUND, 'User tidak ditemukan!');
-    }
-    const user = await prisma.user.update({
-      where: { id: userId },
-      data: {
-        email: newEmail,
-      }
-    });
-    return user;
   }
 
   static async updateUserStatusByAdmin (userBody: UpdateUserStatusAdmin) {

@@ -106,6 +106,7 @@ export const TokenScalarFieldEnum = {
   token: 'token',
   userId: 'userId',
   type: 'type',
+  newEmail: 'newEmail',
   expires: 'expires',
   blacklisted: 'blacklisted',
   createdAt: 'createdAt',

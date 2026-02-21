@@ -1,15 +1,13 @@
 import { SignJWT, jwtVerify } from 'jose'
 import moment, { type Moment } from 'moment';
 import { config } from '@/config/config';
-import { TokenTypes} from '@/models/token.model';
-import { Prisma } from '@/generated/prisma/client';
+import { TokenTypes, type tokenTypes, type TypeSaveToken } from '@/models/token.model';
 import prisma from '@/../prisma/client.js';
 import { ApiError } from '@/utils/ApiError';
 import type { User, Token, JwtPayload } from '@/models/token.model';
 import httpStatusCode from 'http-status-codes';
 import { AdminServices } from './index';
 
-type tokenTypes = 'access' | 'refresh'| 'resetPassword' |  'verifyEmail'
 
 class TokenService {
   static async generateToken ( userId: string, expires: Moment, type: tokenTypes, secret: string = config.jwt.secret): Promise<string> {
@@ -24,13 +22,15 @@ class TokenService {
       .sign(encodedSecret);
   }
 
-  static async saveToken (token: string, userId: string, expires: Moment, type: tokenTypes, blacklisted = false): Promise<Token> {
+  static async saveToken (tokenBody: TypeSaveToken): Promise<Token> {
+    const { token, userId, expires, type,  newEmail, blacklisted } = tokenBody
       const tokenDoc: Token = await prisma.token.create({
         data: {
             token,
-            userId: userId,
+            userId,
             expires: expires instanceof Date ? expires : expires.toDate(),
             type,
+            newEmail,
             blacklisted
         }})
         return tokenDoc;
@@ -65,7 +65,7 @@ class TokenService {
     const refreshTokenExpires = moment().add(config.jwt.refreshExpirationDays, 'days');
     const refreshToken = await this.generateToken(userId, refreshTokenExpires, TokenTypes.REFRESH);
     
-    await this.saveToken(refreshToken, userId, refreshTokenExpires, TokenTypes.REFRESH);
+    await this.saveToken({token: refreshToken, userId, expires: refreshTokenExpires, type: TokenTypes.REFRESH});
     return {
       access: {
         token: accessToken,
@@ -92,7 +92,7 @@ class TokenService {
 
     const expires = moment().add(config.jwt.verifyEmailExpirationMinutes, 'minutes');
     const verifyEmailToken = await this.generateToken(userId, expires, TokenTypes.VERIFY_EMAIL);
-    await this.saveToken(verifyEmailToken, userId, expires, TokenTypes.VERIFY_EMAIL);
+    await this.saveToken({token: verifyEmailToken, userId, expires, type: TokenTypes.VERIFY_EMAIL});
     return verifyEmailToken;
   }
   
@@ -111,8 +111,26 @@ class TokenService {
       
       const expires = moment().add(config.jwt.resetPasswordExpirationMinutes, 'minutes');
       const resetPasswordToken = await this.generateToken(user.id, expires, TokenTypes.RESET_PASSWORD);
-      await this.saveToken(resetPasswordToken, user.id, expires, TokenTypes.RESET_PASSWORD);
+      await this.saveToken({token: resetPasswordToken, userId: user.id, expires, type: TokenTypes.RESET_PASSWORD});
       return resetPasswordToken;
+  }
+
+    static async generateUpdateEmail(userId: string, newEmail: string) {
+    const user = await AdminServices.getUserById(userId);
+    if (!user) {
+      throw new ApiError(httpStatusCode.NOT_FOUND, 'Pengguna tidak ditemukan!');
+    }
+      await prisma.token.deleteMany({
+        where: {
+          userId,
+          type: TokenTypes.UPDATE_EMAIL
+        }
+      });
+      
+      const expires = moment().add(config.jwt.resetPasswordExpirationMinutes, 'minutes');
+      const updateEmail= await this.generateToken(user.id, expires, TokenTypes.UPDATE_EMAIL);
+      await this.saveToken({token: updateEmail, userId: user.id, expires, type: TokenTypes.UPDATE_EMAIL, newEmail});
+      return updateEmail;
   }
 
 }
