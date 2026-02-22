@@ -3,13 +3,13 @@ import { ApiError } from '@/utils/ApiError.js';
 import { catchAsync } from '../utils/catchAsync.js';
 import { TokenServices, StudentServices, EmailServices, AdminServices } from '@/services/index.js';
 import { TokenTypes } from '@/models/token.model.js';
-import type { RequestCreateUser, User, UpdateUserStatusAdmin } from '@/models/user.model.js';
 import { type  Context } from 'hono'
+import type { ParamsId, CreateUserBody, UpdateUserStatusBody } from '@/validations/admin.validation.js';
 
 class AdminController {
   static getUsers = catchAsync(async (c: Context) => {
-    const { id } = c.get('parsedData') as User;
-    const user = await AdminServices.getUserById(id)
+    const { userId } = c.get('parsedParam') as ParamsId;
+    const user = await AdminServices.getUserById(userId)
     if(!user) {
       throw new ApiError(httpStatusCode.NOT_FOUND, 'User tidak ditemukan!');
     }
@@ -18,7 +18,7 @@ class AdminController {
   });
 
   static createUser = catchAsync(async (c: Context) => {
-    const { email, role } = c.get('parsedData') as RequestCreateUser;
+    const { email, role } = c.get('parsedJson') as CreateUserBody;
     const loggedInUser = c.get('user');
 
     if (loggedInUser.role === 'ADMIN' && role === 'ADMIN') {
@@ -41,7 +41,8 @@ class AdminController {
 
 
   static updateUserStatusByAdmin = catchAsync(async (c: Context) => {
-    const { userId, status } = c.get('parsedData') as UpdateUserStatusAdmin;
+    const { status } = c.get('parsedJson') as UpdateUserStatusBody;
+    const { userId } = c.get('parsedParam') as ParamsId;
     const updateUser = await AdminServices.updateUserStatusByAdmin({ userId, status });
     if (!updateUser) {
       throw new ApiError(httpStatusCode.BAD_REQUEST, 'Gagal memperbarui status user!');

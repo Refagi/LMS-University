@@ -3,16 +3,13 @@ import { ApiError } from '@/utils/ApiError.js';
 import { catchAsync } from '../utils/catchAsync.js';
 import { TokenServices, StudentServices, EmailServices,  AuthServices } from '@/services/index.js';
 import { TokenTypes } from '@/models/token.model.js';
-import type { User } from '@/models/user.model.js';
 import { type  Context } from 'hono';
 import { setCookie, getCookie, deleteCookie } from 'hono/cookie'
-import { verifyEmail } from '../validations/auth.validation';
-import { empty } from '../generated/prisma/internal/prismaNamespace';
-
+import type { LoginBody, LogoutBody, VerifyEmailBody, ActivateAccountBody } from '@/validations/auth.validation.js';
 
 class AuthController {
     static login = catchAsync(async (c: Context) => {
-        const {email, password} = c.get('parsedData') as User;
+        const {email, password} = c.get('parsedJson') as LoginBody;
         if(!password ) {
             throw new ApiError(httpStatusCode.BAD_REQUEST, 'Password belum diatur, silahkan atur password terlebih dahulu!');
         }
@@ -38,7 +35,7 @@ class AuthController {
     });
 
     static logout = catchAsync(async (c: Context) => {
-        const getCookies = getCookie(c, 'refreshToken');
+        const getCookies = getCookie(c, 'refreshToken') as LogoutBody['refreshToken'];
         if (!getCookies) {
             throw new ApiError(httpStatusCode.NOT_FOUND, 'Kamu telah logout!');
         }
@@ -49,19 +46,19 @@ class AuthController {
     });
 
     static verifyEmail = catchAsync(async (c: Context) => {
-        const { token } = c.get('parsedData') as { token: string };
+        const { token } = c.get('parsedQuery') as VerifyEmailBody;
         await AuthServices.verifyEmail(token);
         return c.json({status: httpStatusCode.OK, message: 'Email berhasil diverifikasi'})
     })
 
     static activateAccount = catchAsync(async (c: Context) => {
-        const { email, password } = c.get('parsedData') as { email: string, password: string };
+        const { email, password } = c.get('parsedJson') as ActivateAccountBody;
         const updatedUser = await AuthServices.activateAccount(email, password);
         return c.json({status: httpStatusCode.OK, message: 'Password berhasil diatur dan email berhasil diverifikasi', data: updatedUser})
     });
 
     static refreshToken = catchAsync(async (c: Context) => {
-        const getToken = getCookie(c, 'refreshToken');
+        const getToken = getCookie(c, 'refreshToken') as LogoutBody['refreshToken'];
         if (!getToken) {
             throw new ApiError(httpStatusCode.UNAUTHORIZED, 'Refresh token tidak ditemukan!');
         }

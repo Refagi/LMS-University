@@ -25,3 +25,9 @@ export const verifyEmail =
     token: z.string().min(1, { message: 'verify token must exist!' })
   })
 
+export const activateAccount = login;
+
+export type LoginBody = z.infer<typeof login>;
+export type LogoutBody = z.infer<typeof logout>;
+export type VerifyEmailBody = z.infer<typeof verifyEmail>;
+export type ActivateAccountBody = z.infer<typeof activateAccount>;

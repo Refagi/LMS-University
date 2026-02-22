@@ -13,13 +13,13 @@ const parsers = {
 };
 
 export class ValidateMiddlewares {
-    createValidator(schema: ZodType, type: ValidationType) {
+    createValidator(schema: ZodType, type: ValidationType, contextKey: string = 'parsedData') {
         return async (c: Context, next: Next) => {
             try {
                 const parser = parsers[type];
                 const data = await parser(c);
                 const validatedData = schema.parse(data);
-                c.set('parsedData', validatedData);
+                c.set(contextKey, validatedData);
                 await next();
             } catch(error) {
                 if (error instanceof SyntaxError) {
@@ -34,23 +34,23 @@ export class ValidateMiddlewares {
     }
     
     validateForm = (schema: ZodType) => {
-        return this.createValidator(schema, ValidationType.BODY);
+        return this.createValidator(schema, ValidationType.BODY, 'parsedBody');
     };
     
     validateQuery = (schema: ZodType) => {
-        return this.createValidator(schema, ValidationType.QUERY);
+        return this.createValidator(schema, ValidationType.QUERY, 'parsedQuery');
     };
     
     validateJson = (schema: ZodType) => {
-        return this.createValidator(schema, ValidationType.JSON);
+        return this.createValidator(schema, ValidationType.JSON, 'parsedJson');
     };
     
     validateParam = (schema: ZodType) => {
-        return this.createValidator(schema, ValidationType.PARAM);
+        return this.createValidator(schema, ValidationType.PARAM, 'parsedParam');
     };
     
     validateHeader = (schema: ZodType) => {
-        return this.createValidator(schema, ValidationType.HEADER);
+        return this.createValidator(schema, ValidationType.HEADER, 'parsedHeader');
     };
 }
 

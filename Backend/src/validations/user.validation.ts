@@ -6,3 +6,5 @@ export const updateUserEmail = z.object({
       .email({ message: 'Email must be a valid email address' })
       .refine((email) => email.endsWith('@gmail.com'), { message: 'Email must end with @gmail.com' }),
 })
+
+export type UpdateUserEmail = z.infer<typeof updateUserEmail>;

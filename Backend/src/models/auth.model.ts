@@ -3,6 +3,6 @@
   QUERY = 'query',
   PARAM = 'param',
   HEADER = 'header',
-  JSON = 'json'
+  JSON = 'json',
 }
 

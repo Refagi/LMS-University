@@ -13,6 +13,10 @@ export class AuthServices {
         if (!user) {
             throw new ApiError(httpStatusCode.UNAUTHORIZED, 'Email atau Password salah!');
         }
+
+        if(user.status === 'SUSPENDED') {
+            throw new ApiError(httpStatusCode.UNAUTHORIZED, 'Akun anda disuspend, silahkan hubungi admin untuk mengaktifkan akun anda!');
+        }
         
         
         if (user.isEmailVerified === false) {
