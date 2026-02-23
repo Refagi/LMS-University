@@ -5,6 +5,7 @@ import {  UserService, TokenServices, EmailServices, AdminServices } from '@/ser
 import { TokenTypes } from '@/models/token.model.js';
 import type {  User, UpdateUserEmail } from '@/models/user.model.js';
 import { type  Context } from 'hono'
+import type { VerifyEmailBody } from '@/validations/auth.validation.js';
 
 class UserController {
 
@@ -24,7 +25,7 @@ class UserController {
     })
 
     static verifyUpdateEmail = catchAsync(async (c: Context) => {
-        const token = c.get('parsedQuery').token as string;
+        const token = c.get('parsedQuery').token as VerifyEmailBody['token'];
         
         if (!token) {
             throw new ApiError(httpStatusCode.BAD_REQUEST, 'Token required!')

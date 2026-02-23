@@ -5,7 +5,7 @@ import { TokenServices, StudentServices, EmailServices,  AuthServices } from '@/
 import { TokenTypes } from '@/models/token.model.js';
 import { type  Context } from 'hono';
 import { setCookie, getCookie, deleteCookie } from 'hono/cookie'
-import type { LoginBody, LogoutBody, VerifyEmailBody, ActivateAccountBody } from '@/validations/auth.validation.js';
+import type { LoginBody, LogoutBody, VerifyEmailBody, ActivateAccountBody, ForgotPasswordBody, ResetPasswordBody } from '@/validations/auth.validation.js';
 
 class AuthController {
     static login = catchAsync(async (c: Context) => {
@@ -78,6 +78,20 @@ class AuthController {
             maxAge: 60 * 60 * 24 * 30 // 30 days
         });
         return c.json({status: httpStatusCode.OK, message: 'Token berhasil diperbarui', data: newToken});
+    })
+
+    static forgotPassword = catchAsync(async (c: Context) => {
+        const { email } = c.get('parsedJson') as ForgotPasswordBody;
+        const resetPasswordToken = await TokenServices.generateResetPasswordToken(email);
+        await EmailServices.sendVerificationForgotPassword(email, resetPasswordToken);
+        return c.json({status: httpStatusCode.OK, message: `Email reset password berhasil dikirim, silahkan cek ${email}!`})
+    })
+
+    static resetPassword = catchAsync(async (c: Context) => {
+        const token = c.get('parsedQuery').token as VerifyEmailBody['token'];
+        const { newPassword } = c.get('parsedJson') as ResetPasswordBody;
+        await AuthServices.resetPassword(token, newPassword);
+        return c.json({status: httpStatusCode.OK, message: 'Password berhasil direset!'})
     })
 
 

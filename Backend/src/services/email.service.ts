@@ -55,7 +55,7 @@ class EmailServices {
 
   static async sendVerificationForgotPassword(email: string, token: string): Promise<void> {
     // const verificationUrl = `${config.fe}/reset-password?token=${token}`;
-    const verificationUrl = `http://localhost:3000/v1/admin/verify-reset-password?token=${token}`;
+    const verificationUrl = `http://localhost:3000/v1/auth/reset-password?token=${token}`;
     const html = this.buildForgotPasswordTemplate(verificationUrl);
 
     await this.send({

@@ -3,6 +3,7 @@ import { ApiError } from '@/utils/ApiError';
 import httpStatusCode from 'http-status-codes';
 import prisma from '@/../prisma/client';
 import { TokenTypes } from '@/models/token.model';
+import { addAbortListener } from 'node:events';
 
 export class AuthServices {
     static async login(email: string, password: string) {
@@ -88,7 +89,7 @@ export class AuthServices {
         
         const getUser = await AdminServices.getUserById(verifyEmailTokenDoc.userId);
         if(!getUser) {
-            throw new ApiError(httpStatusCode.NOT_FOUND, 'User tidak ditemukan!');
+            throw new ApiError(httpStatusCode.NOT_FOUND, 'Pengguna tidak ditemukan!');
         }
         
         await prisma.$transaction([
@@ -109,7 +110,7 @@ export class AuthServices {
     static async activateAccount(email: string, password: string) {
         const user = await AdminServices.getUserByEmail(email);
         if(!user) {
-          throw new ApiError(httpStatusCode.NOT_FOUND, 'User tidak ditemukan!');
+          throw new ApiError(httpStatusCode.NOT_FOUND, 'Pengguna tidak ditemukan!');
         }
         if (user.password) {
             throw new ApiError(httpStatusCode.BAD_REQUEST, 'Password sudah diatur sebelumnya!');
@@ -130,6 +131,31 @@ export class AuthServices {
                 }}),
             prisma.token.deleteMany({where: { userId: user.id, type: TokenTypes.VERIFY_EMAIL }})
         ]);
+    }
+
+    static async resetPassword(token: string, newPassword: string) {
+        try {
+            const resetPasswordTokenDoc = await TokenServices.verifyToken(token, TokenTypes.RESET_PASSWORD);
+            const user = await AdminServices.getUserById(resetPasswordTokenDoc.userId);
+            if(!user) {
+                throw new ApiError(httpStatusCode.NOT_FOUND, 'Pengguna tidak ditemukan!');
+            }
+            const hashedPassword = await Bun.password.hash(newPassword, {
+                algorithm: 'bcrypt',
+                cost: 10
+            })
+            const updatePassword = await prisma.$transaction([
+                prisma.user.update({
+                    where: { id: user.id }, data: { password: hashedPassword}
+                }),
+                prisma.token.deleteMany({
+                    where: { userId: user.id, type: TokenTypes.RESET_PASSWORD }
+                })
+            ])
+            return updatePassword;
+        } catch (error)  {
+            throw new ApiError(httpStatusCode.UNAUTHORIZED, 'Reset password gagal!');
+        }
     }
 
 }
