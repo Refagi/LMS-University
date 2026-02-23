@@ -1,8 +1,8 @@
 import crypto from 'crypto';
 
 export function generateRandomPassword(length: number = 12): string {
-  if (length < 8) {
-    throw new Error('Password length must be at least 8 characters for security');
+  if (length < 12) {
+    throw new Error('Password length must be at least 12 characters for security');
   }
 
   const lowercase = 'abcdefghijklmnopqrstuvwxyz';

@@ -53,9 +53,23 @@ class EmailServices {
     });
   }
 
-    static async sendVerificationResetPassword(email: string, token: string): Promise<void> {
-    const verificationUrl = `${config.fe}/reset-password?token=${token}`;
-    const html = this.buildResetPasswordTemplate(verificationUrl);
+  static async sendVerificationForgotPassword(email: string, token: string): Promise<void> {
+    // const verificationUrl = `${config.fe}/reset-password?token=${token}`;
+    const verificationUrl = `http://localhost:3000/v1/admin/verify-reset-password?token=${token}`;
+    const html = this.buildForgotPasswordTemplate(verificationUrl);
+
+    await this.send({
+      from: config.email.from,
+      to: email,
+      subject: 'Reset Password - LMS University',
+      html
+    });
+  }
+
+    static async sendVerificationResetPassword(email: string, temporaryPassword: string): Promise<void> {
+    // const verificationUrl = `${config.fe}/reset-password?token=${token}`;
+    // const verificationUrl = `http://localhost:3000/v1/admin/verify-reset-password`;
+    const html = this.buildPasswordResetTemplate(temporaryPassword);
 
     await this.send({
       from: config.email.from,
@@ -120,7 +134,70 @@ class EmailServices {
     `;
   }
 
-  private static buildResetPasswordTemplate(resetUrl: string): string {
+private static buildPasswordResetTemplate(temporaryPassword: string): string {
+    return `
+<!DOCTYPE html>
+<html>
+  <body style="margin:0;padding:0;background-color:#f4f4f4;">
+    <table width="100%">
+      <tr>
+        <td align="center" style="padding:20px;">
+          <table width="600" style="background:#ffffff;border-radius:8px;">
+            <tr>
+              <td style="padding:40px;text-align:center;font-family:Arial;">
+                <h2 style="color:#3a86ff;margin-bottom:20px;">Password Reset</h2>
+                
+                <p style="color:#666;font-size:16px;line-height:1.6;margin-bottom:30px;">
+                  Password Anda telah direset oleh administrator. 
+                  Berikut adalah password sementara Anda:
+                </p>
+
+                <div style="
+                  background:#f8f9fa;
+                  border:2px solid #3a86ff;
+                  border-radius:8px;
+                  padding:20px;
+                  margin:30px 0;
+                ">
+                  <p style="margin:0;color:#666;font-size:14px;margin-bottom:10px;">
+                    Password Sementara:
+                  </p>
+                  <p style="
+                    margin:0;
+                    font-size:24px;
+                    font-weight:bold;
+                    color:#3a86ff;
+                    font-family:monospace;
+                    letter-spacing:2px;
+                  ">
+                    ${temporaryPassword}
+                  </p>
+                </div>
+
+                <p style="color:#666;font-size:14px;line-height:1.6;margin-bottom:30px;">
+                  <strong>Penting!:</strong><br>
+                  Silakan login dengan password di atas dan segera ubah password Anda 
+                  untuk keamanan akun.
+                </p>
+
+                <p style="font-size:12px;color:#999;margin-top:30px;line-height:1.6;">
+                  Password ini bersifat sementara dan sangat disarankan untuk 
+                  mengubahnya setelah login pertama kali.<br>
+                  Jika Anda tidak meminta reset password, segera hubungi administrator.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+    `;
+}
+
+
+  private static buildForgotPasswordTemplate(resetUrl: string): string {
   return `
 <!DOCTYPE html>
 <html>

@@ -24,7 +24,7 @@ class UserController {
     })
 
     static verifyUpdateEmail = catchAsync(async (c: Context) => {
-        const token = c.req.query('token')
+        const token = c.get('parsedQuery').token as string;
         
         if (!token) {
             throw new ApiError(httpStatusCode.BAD_REQUEST, 'Token required!')

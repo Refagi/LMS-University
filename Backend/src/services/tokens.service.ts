@@ -97,21 +97,21 @@ class TokenService {
   }
   
 
-  static async generateResetPasswordToken(email: string) {
-    const user = await AdminServices.getUserByEmail(email);
-    if (!user) {
-      throw new ApiError(httpStatusCode.NOT_FOUND, 'Pengguna dengan email ini tidak ditemukan!');
+  static async generateResetPasswordToken(users: User) {
+    const userId = users.id
+    if (!userId) {
+      throw new ApiError(httpStatusCode.NOT_FOUND, 'Pengguna tidak ditemukan!');
     }
       await prisma.token.deleteMany({
         where: {
-          userId: user.id,
+          userId,
           type: TokenTypes.RESET_PASSWORD
         }
       });
       
       const expires = moment().add(config.jwt.resetPasswordExpirationMinutes, 'minutes');
-      const resetPasswordToken = await this.generateToken(user.id, expires, TokenTypes.RESET_PASSWORD);
-      await this.saveToken({token: resetPasswordToken, userId: user.id, expires, type: TokenTypes.RESET_PASSWORD});
+      const resetPasswordToken = await this.generateToken(userId, expires, TokenTypes.RESET_PASSWORD);
+      await this.saveToken({token: resetPasswordToken, userId: userId, expires, type: TokenTypes.RESET_PASSWORD});
       return resetPasswordToken;
   }
 

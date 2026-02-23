@@ -5,7 +5,7 @@ import { Prisma } from '@/generated/prisma/client.js';
 import { config } from '@/config/config.js';
 import type { RequestCreateUser, UpdateUserStatusAdmin } from '@/models/user.model.js';
 import { TokenServices, StudentServices, AuthServices, EmailServices } from './index';
-import { TokenTypes } from '@/models/token.model.js';
+import { generateRandomPassword } from '@/utils/randomPass.js';
 
 type User = Prisma.UserGetPayload<{}>;
 
@@ -49,6 +49,7 @@ class AdminServices {
       where: { id: userId },
       data: {
         status,
+        updatedAt: new Date()
       }
     });
     return user;
@@ -59,8 +60,26 @@ class AdminServices {
     if(!user) {
       throw new ApiError(httpStatusCode.NOT_FOUND, 'User tidak ditemukan!');
     }
-    const resetPasswordTokenDoc = await TokenServices.generateResetPasswordToken(user.email);
-    return resetPasswordTokenDoc;
+    if(user.status !== 'ACTIVE') {
+      throw new ApiError(httpStatusCode.BAD_REQUEST, 'User tidak aktif!');
+    }
+    if(user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') {
+      throw new ApiError(httpStatusCode.FORBIDDEN, 'Tidak dapat mereset password untuk admin!');
+    }
+    const temporaryPassword = generateRandomPassword(12);
+    const hashedPassword = await Bun.password.hash(temporaryPassword, {
+      algorithm: 'bcrypt',
+      cost: 10
+    })
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        password: hashedPassword,
+        updatedAt: new Date()
+      }
+    })
+    const { password, ...userWithoutPassword } = updatedUser;
+    return { user: userWithoutPassword, password: temporaryPassword };
   }
 };
 

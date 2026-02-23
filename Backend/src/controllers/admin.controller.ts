@@ -5,9 +5,10 @@ import { TokenServices, StudentServices, EmailServices, AdminServices } from '@/
 import { TokenTypes } from '@/models/token.model.js';
 import { type  Context } from 'hono'
 import type { ParamsId, CreateUserBody, UpdateUserStatusBody } from '@/validations/admin.validation.js';
+import type {  User } from '@/models/user.model.js';
 
 class AdminController {
-  static getUsers = catchAsync(async (c: Context) => {
+  static getUser = catchAsync(async (c: Context) => {
     const { userId } = c.get('parsedParam') as ParamsId;
     const user = await AdminServices.getUserById(userId)
     if(!user) {
@@ -49,6 +50,19 @@ class AdminController {
     }
     return c.json({status: httpStatusCode.OK, message: 'Status berhasil diperbarui!', data: updateUser});
   });
+
+  static resetPasswordByAdmin = catchAsync(async (c: Context) => {
+    const { userId } = c.get('parsedParam') as ParamsId;
+    const checkUser = c.get('user') as User
+    if(!checkUser) {
+      throw new ApiError(httpStatusCode.UNAUTHORIZED, 'Pengguna belum terverifikasi!')
+    }
+    const { user, password } = await AdminServices.resetPasswordByAdmin(userId);
+    await EmailServices.sendVerificationResetPassword(user.email, password);
+    return c.json({status: httpStatusCode.OK, message: `Password berhasil direset. Email dengan password sementara telah dikirim, periksa ${user.email}`})
+  })
+
+
 };
 
 export default AdminController;

@@ -7,7 +7,6 @@ import type { UpdateUserEmail } from '@/models/user.model.js';
 import { AuthServices, AdminServices } from './index';
 import { TokenTypes } from '@/models/token.model.js';
 
-
 type User = Prisma.UserGetPayload<{}>;
 type Token = Prisma.TokenGetPayload<{}>;
 
@@ -21,7 +20,7 @@ class UserService {
         const [updateUser] = await prisma.$transaction([
             prisma.user.update({
                 where: {id: getUser.id},
-                data: {email: newEmail}
+                data: {email: newEmail, updatedAt: new Date()}
             }),
             prisma.token.deleteMany({
                 where: {userId: getUser.id, type: TokenTypes.UPDATE_EMAIL},
