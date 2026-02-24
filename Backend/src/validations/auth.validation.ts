@@ -32,6 +32,7 @@ export const forgotPassord = z.object({
 })
 
 export const resetPassword = z.object({
+  token: z.string().min(1, { message: 'verify token must exist!' }),
   newPassword: 
   z.string()
   .min(12, { message: 'Password must be at least 12 characters' })

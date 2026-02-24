@@ -84,17 +84,14 @@ class AuthController {
         const { email } = c.get('parsedJson') as ForgotPasswordBody;
         const resetPasswordToken = await TokenServices.generateResetPasswordToken(email);
         await EmailServices.sendVerificationForgotPassword(email, resetPasswordToken);
-        return c.json({status: httpStatusCode.OK, message: `Email reset password berhasil dikirim, silahkan cek ${email}!`})
+        return c.json({status: httpStatusCode.OK, message: `Jika email terdaftar, link reset password telah dikirim.`})
     })
 
     static resetPassword = catchAsync(async (c: Context) => {
-        const token = c.get('parsedQuery').token as VerifyEmailBody['token'];
-        const { newPassword } = c.get('parsedJson') as ResetPasswordBody;
+        const { token, newPassword } = c.get('parsedJson') as ResetPasswordBody;
         await AuthServices.resetPassword(token, newPassword);
         return c.json({status: httpStatusCode.OK, message: 'Password berhasil direset!'})
     })
-
-
 }
 
 export default AuthController;

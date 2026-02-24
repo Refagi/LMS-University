@@ -3,7 +3,6 @@ import { ApiError } from '@/utils/ApiError';
 import httpStatusCode from 'http-status-codes';
 import prisma from '@/../prisma/client';
 import { TokenTypes } from '@/models/token.model';
-import { addAbortListener } from 'node:events';
 
 export class AuthServices {
     static async login(email: string, password: string) {
@@ -154,10 +153,9 @@ export class AuthServices {
             ])
             return updatePassword;
         } catch (error)  {
-            throw new ApiError(httpStatusCode.UNAUTHORIZED, 'Reset password gagal!');
+            throw error
         }
     }
-
 }
 
 export default AuthServices;
