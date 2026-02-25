@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type{ TokenType } from '@/models/config.model';
+import type{ TokenTypeConfig } from '@/models/token.model';
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['production', 'development', 'test']).default('development'),
@@ -67,7 +67,7 @@ class AppConfig {
     return this.databaseUrl!;
   }
 
-  get jwt(): TokenType{
+  get jwt(): TokenTypeConfig{
     return {
       secret: this.typeEnv.JWT_SECRET,
       accessExpirationMinutes: this.typeEnv.JWT_ACCESS_EXPIRATION_MINUTES,

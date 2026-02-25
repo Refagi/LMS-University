@@ -115,7 +115,7 @@ class TokenService {
       return resetPasswordToken;
   }
 
-    static async generateUpdateEmail(userId: string, newEmail: string) {
+    static async generateUpdateEmailToken(userId: string, newEmail: string) {
     const user = await AdminServices.getUserById(userId);
     if (!user) {
       throw new ApiError(httpStatusCode.NOT_FOUND, 'Pengguna tidak ditemukan!');

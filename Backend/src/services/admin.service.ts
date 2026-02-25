@@ -3,7 +3,7 @@ import prisma from '../../prisma/client.js';
 import { ApiError } from '@/utils/ApiError.js';
 import { Prisma } from '@/generated/prisma/client.js';
 import { config } from '@/config/config.js';
-import type { RequestCreateUser, UpdateUserStatusAdmin } from '@/models/user.model.js';
+import type { RequestCreateUser, UpdateUserStatusAdmin, GetAllUsers } from '@/models/user.model.js';
 import { TokenServices, StudentServices, AuthServices, EmailServices } from './index';
 import { generateRandomPassword } from '@/utils/randomPass.js';
 
@@ -22,6 +22,102 @@ class AdminServices {
       where: {id: userId}
     });
     return user;
+  }
+
+  static async getAllUsers(options: GetAllUsers) {
+    const { page = 1, limit = 10, search, role, status, faculty, studyProgram, sortBy = 'fullName', sortOrder } = options;
+    const skip = (page - 1) * limit;
+    const where: Prisma.UserWhereInput = {
+      ...(role && { role }),
+      ...(status && { status }),
+
+      ...(search && {
+        OR: [
+          { email: { contains: search, mode: 'insensitive' } },
+          {
+            profile: {
+              OR: [
+                { fullName: { contains: search, mode: 'insensitive' } },
+                { npm: { contains: search, mode: 'insensitive' } },
+                { nidn: { contains: search, mode: 'insensitive' } },
+              ]
+            }
+          }
+        ]
+      }),
+      ...(faculty &&  {profile: {faculty: { contains: faculty, mode: 'insensitive' }}}),
+      ...(studyProgram &&  {profile: {StudyProgram: { contains: studyProgram, mode: 'insensitive' }}}),
+    }
+
+    let orderBy: Prisma.UserOrderByWithRelationInput;
+    if (sortBy === 'fullName') {
+      orderBy = {
+        profile: {
+          fullName: sortOrder
+        }
+      };
+    } else {
+      orderBy = {
+        [sortBy]: sortOrder
+      };
+    }
+    
+    const [users, totalCount] = await Promise.all([
+      prisma.user.findMany({
+        where,
+        include: {
+          profile: {
+            select: {
+              fullName: true,
+              phone: true,
+              npm: true,
+              nidn: true,
+              faculty: true,
+              StudyProgram: true,
+              image: true,
+            }
+          },
+          _count: {
+            select: {
+              enrollments: true,
+              courses: true,
+            }
+          }
+        },
+        orderBy,
+        skip,
+        take: limit,
+      }),
+      prisma.user.count({ where })
+    ]);
+
+    const totalPages = Math.ceil(totalCount / limit);
+    const nextPage = page < totalPages;
+    const prevPage = page > 1;
+
+    return {
+      data: users.map(user => ({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        status: user.status,
+        isEmailVerified: user.isEmailVerified,
+        createdAt: user.createdAt,
+        profile: user.profile,
+        stats: {
+          enrollments: user._count.enrollments,
+          courses: user._count.courses,
+        }
+      })),
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalCount,
+        limit,
+        nextPage,
+        prevPage,
+      }
+    };
   }
 
   static async createUser(userBody: RequestCreateUser) {

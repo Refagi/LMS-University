@@ -4,7 +4,7 @@ import { catchAsync } from '../utils/catchAsync.js';
 import { TokenServices, StudentServices, EmailServices, AdminServices } from '@/services/index.js';
 import { TokenTypes } from '@/models/token.model.js';
 import { type  Context } from 'hono'
-import type { ParamsId, CreateUserBody, UpdateUserStatusBody } from '@/validations/admin.validation.js';
+import type { ParamsId, CreateUserBody, UpdateUserStatusBody, GetAllUsersQuery } from '@/validations/admin.validation.js';
 import type {  User } from '@/models/user.model.js';
 
 class AdminController {
@@ -17,6 +17,12 @@ class AdminController {
 
     return c.json({status: httpStatusCode.OK, data: user})
   });
+
+  static getAllUser = catchAsync(async (c: Context) => {
+    const options = c.get('parsedQuery') as GetAllUsersQuery;
+    const users = await AdminServices.getAllUsers(options);
+    return c.json({status: httpStatusCode.OK, ...users})
+  })
 
   static createUser = catchAsync(async (c: Context) => {
     const { email, role } = c.get('parsedJson') as CreateUserBody;

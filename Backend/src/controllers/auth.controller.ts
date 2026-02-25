@@ -13,7 +13,8 @@ class AuthController {
         if(!password ) {
             throw new ApiError(httpStatusCode.BAD_REQUEST, 'Password belum diatur, silahkan atur password terlebih dahulu!');
         }
-        const user = await AuthServices.login(email, password);
+        const userBody = { email, password }
+        const user = await AuthServices.login(userBody);
         const tokens = await TokenServices.generateAuthTokens(user.id);
         setCookie(c, 'accessToken', tokens.access.token, {
             httpOnly: true,
@@ -53,7 +54,8 @@ class AuthController {
 
     static activateAccount = catchAsync(async (c: Context) => {
         const { email, password } = c.get('parsedJson') as ActivateAccountBody;
-        const updatedUser = await AuthServices.activateAccount(email, password);
+        const userBody = { email, password }
+        const updatedUser = await AuthServices.activateAccount(userBody);
         return c.json({status: httpStatusCode.OK, message: 'Password berhasil diatur dan email berhasil diverifikasi', data: updatedUser})
     });
 
@@ -89,7 +91,8 @@ class AuthController {
 
     static resetPassword = catchAsync(async (c: Context) => {
         const { token, newPassword } = c.get('parsedJson') as ResetPasswordBody;
-        await AuthServices.resetPassword(token, newPassword);
+        const userBody = { token, newPassword }
+        await AuthServices.resetPassword(userBody);
         return c.json({status: httpStatusCode.OK, message: 'Password berhasil direset!'})
     })
 }

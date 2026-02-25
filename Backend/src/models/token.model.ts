@@ -1,6 +1,5 @@
 import { Prisma } from '@/generated/prisma/client';
 import moment, { type Moment } from 'moment';
-import { boolean } from 'zod';
 
 export type User = Prisma.UserGetPayload<{}>;
 export type Token = Prisma.TokenGetPayload<{}>;
@@ -11,6 +10,15 @@ export interface JwtPayload {
   exp: number;
   type: string
 }
+
+export interface TokenTypeConfig {
+  secret: string;
+  accessExpirationMinutes: number;
+  refreshExpirationDays: number;
+  resetPasswordExpirationMinutes: number;
+  verifyEmailExpirationMinutes: number;
+}
+
 
 export enum TokenTypes {
   ACCESS = 'access',

@@ -3,9 +3,11 @@ import { ApiError } from '@/utils/ApiError';
 import httpStatusCode from 'http-status-codes';
 import prisma from '@/../prisma/client';
 import { TokenTypes } from '@/models/token.model';
+import type { LoginType, ActivateUserType, ResetPasswordType } from '@/models/auth.model';
 
 export class AuthServices {
-    static async login(email: string, password: string) {
+    static async login(userBody: LoginType) {
+        const { email, password } = userBody;
         const user = await prisma.user.findUnique({
             where: {email}
         })
@@ -106,7 +108,8 @@ export class AuthServices {
         ]);
     };
 
-    static async activateAccount(email: string, password: string) {
+    static async activateAccount(userBody: ActivateUserType) {
+        const { email, password } = userBody;
         const user = await AdminServices.getUserByEmail(email);
         if(!user) {
           throw new ApiError(httpStatusCode.NOT_FOUND, 'Pengguna tidak ditemukan!');
@@ -132,8 +135,9 @@ export class AuthServices {
         ]);
     }
 
-    static async resetPassword(token: string, newPassword: string) {
+    static async resetPassword(userBody: ResetPasswordType) {
         try {
+            const { token, newPassword } = userBody;
             const resetPasswordTokenDoc = await TokenServices.verifyToken(token, TokenTypes.RESET_PASSWORD);
             const user = await AdminServices.getUserById(resetPasswordTokenDoc.userId);
             if(!user) {

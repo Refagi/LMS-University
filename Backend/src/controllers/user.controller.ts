@@ -3,7 +3,7 @@ import { ApiError } from '@/utils/ApiError.js';
 import { catchAsync } from '../utils/catchAsync.js';
 import {  UserService, TokenServices, EmailServices, AdminServices } from '@/services/index.js';
 import { TokenTypes } from '@/models/token.model.js';
-import type {  User, UpdateUserEmail } from '@/models/user.model.js';
+import type {  User, UpdateUserEmailType } from '@/models/user.model.js';
 import { type  Context } from 'hono'
 import type { VerifyEmailBody } from '@/validations/auth.validation.js';
 
@@ -19,7 +19,7 @@ class UserController {
         if (existingUser) {
             throw new ApiError(httpStatusCode.BAD_REQUEST, 'Email sudah digunakan!')
         }
-        const verifyToken = await TokenServices.generateUpdateEmail(user.id, newEmail)
+        const verifyToken = await TokenServices.generateUpdateEmailToken(user.id, newEmail)
         await EmailServices.sendVerificationUpdateEmail(newEmail, verifyToken)
         return c.json({status: httpStatusCode.OK, message: `Verifikasi update email telah dikirim, periksa ${newEmail}`, token: verifyToken})
     })
@@ -35,8 +35,9 @@ class UserController {
         if(!tokenDoc.newEmail) {
             throw new ApiError(httpStatusCode.BAD_REQUEST, 'Email baru belum dibuat!');
         }
+        const userBody = { userId: tokenDoc.userId, newEmail: tokenDoc.newEmail }
 
-        const updateUser = await UserService.updateUserEmail(tokenDoc.userId, tokenDoc.newEmail);
+        const updateUser = await UserService.updateUserEmail(userBody);
         if (!updateUser) {
             throw new ApiError(httpStatusCode.BAD_REQUEST, 'Gagal memperbarui email user!'); 
         }

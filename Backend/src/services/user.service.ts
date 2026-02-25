@@ -3,7 +3,7 @@ import prisma from '../../prisma/client.js';
 import { ApiError } from '@/utils/ApiError.js';
 import { Prisma, Role } from '@/generated/prisma/client.js';
 import { config } from '@/config/config.js';
-import type { UpdateUserEmail } from '@/models/user.model.js';
+import type { UpdateUserEmailType } from '@/models/user.model.js';
 import { AuthServices, AdminServices } from './index';
 import { TokenTypes } from '@/models/token.model.js';
 
@@ -11,7 +11,8 @@ type User = Prisma.UserGetPayload<{}>;
 type Token = Prisma.TokenGetPayload<{}>;
 
 class UserService {
-    static async updateUserEmail (userId: string, newEmail: string) {
+    static async updateUserEmail (userBody: UpdateUserEmailType) {
+        const { userId, newEmail } = userBody;
         const getUser = await AdminServices.getUserById(userId);
         if(!getUser) {
             throw new ApiError(httpStatusCode.NOT_FOUND, 'User tidak ditemukan!');
