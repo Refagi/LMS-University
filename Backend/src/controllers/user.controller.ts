@@ -43,6 +43,15 @@ class UserController {
         }
         return c.json({status: httpStatusCode.OK, message: 'Email berhasil diperbarui!', data: updateUser})
     });
+
+    static getProfileUser = catchAsync(async (c: Context) => {
+        const user = c.get('user') as User;
+        if(!user) {
+            throw new ApiError(httpStatusCode.UNAUTHORIZED, 'Pengguna belum terverifikasi!')
+        }
+        const getProfile = await UserService.getProfileUser(user.id);
+        return c.json({status: httpStatusCode.OK, data: getProfile})
+    })
 }
 
 export default UserController

@@ -75,6 +75,7 @@ class AdminServices {
               faculty: true,
               StudyProgram: true,
               image: true,
+              generation: true
             }
           },
           _count: {
