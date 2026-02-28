@@ -43,7 +43,7 @@ app.use('/v1/*', compress({encoding: 'gzip'}));
 
 app.route('/v1', routes)
 
-app.get('/', (c) => {
+app.get('/v1', (c) => {
   logger.info('Root endpoint accessed');
   return c.text('Hello Bun!')
 });

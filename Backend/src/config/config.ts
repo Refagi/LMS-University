@@ -5,7 +5,6 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['production', 'development', 'test']).default('development'),
   PORT: z.coerce.number().default(3000),
   DATABASE_URL: z.string().trim().min(1, { message: 'DATABASE_URL is required' }),
-  DATABASE_DIRECT_URL: z.string().trim().optional(),
   DATABASE_URL_TESTING: z.string().trim().optional(),
   JWT_SECRET: z.string().trim().min(1, { message: 'JWT_SECRET is required' }),
   JWT_ACCESS_EXPIRATION_MINUTES: z.coerce.number().default(60),
