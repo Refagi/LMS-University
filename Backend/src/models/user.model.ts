@@ -15,12 +15,11 @@ export interface GetAllUsers {
     page?: number;
     limit?: number;
     search?: string;
-    role?: 'ADMIN' | 'DOSEN' | 'MAHASISWA';
+    role?: 'SUPER_ADMIN' | 'ADMIN' | 'DOSEN' | 'MAHASISWA';
     status?: 'PENDING' | 'ACTIVE' | 'SUSPENDED';
     faculty?: string;
     studyProgram?: string;
-    isEmailVerified?: boolean;
-    sortBy?: 'email' | 'fullName' | 'role' | 'status';
+    sortBy?: 'email' | 'fullName' | 'role' | 'status' | 'createdAt';
     sortOrder?: 'asc' | 'desc';
 }
 

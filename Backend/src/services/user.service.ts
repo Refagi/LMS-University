@@ -38,7 +38,7 @@ class UserService {
                 id: true,
                 email: true,
                 role: true,
-                profile: {
+                Profile: {
                     select: {
                         fullName: true,
                         phone: true,
@@ -47,8 +47,16 @@ class UserService {
                         npm: true,
                         nidn: true,
                         image: true,
-                        faculty: true,
-                        StudyProgram: true,
+                        StudyProgram: {
+                            select: {
+                                name: true,
+                                Faculty: {
+                                    select: {
+                                        name: true
+                                    }
+                                }
+                            }
+                        },
                         generation: true
                     }
                 }
@@ -57,32 +65,31 @@ class UserService {
         if(!getUser) {
             throw new ApiError(httpStatusCode.NOT_FOUND, 'Pengguna tidak ditemukan!');
         }
-        if(!getUser.profile) {
+        if(!getUser.Profile) {
             throw new ApiError(httpStatusCode.NOT_FOUND, 'Profil pengguna tidak ditemukan!');
         }
           const baseProfile = {
             id: getUser.id,
             email: getUser.email,
             role: getUser.role,
-            fullName: getUser.profile.fullName,
-            phone: getUser.profile.phone,
-            placeOfBirth: getUser.profile.placeOfBirth,
-            dateOfBirth: getUser.profile.dateOfBirth,
-            image: getUser.profile.image,
-            faculty: getUser.profile.faculty,
-            StudyProgram: getUser.profile.StudyProgram,
+            fullName: getUser.Profile.fullName,
+            phone: getUser.Profile.phone,
+            placeOfBirth: getUser.Profile.placeOfBirth,
+            dateOfBirth: getUser.Profile.dateOfBirth,
+            image: getUser.Profile.image,
+            StudyProgram: getUser.Profile.StudyProgram,
         }
         if (getUser.role === 'MAHASISWA') {
             return {
                 ...baseProfile,
-                npm: getUser.profile.npm,
-                generation: getUser.profile.generation
+                npm: getUser.Profile.npm,
+                generation: getUser.Profile.generation
             }
         }
         if (getUser.role === 'DOSEN') {
             return {
                 ...baseProfile,
-                nidn: getUser.profile.nidn
+                nidn: getUser.Profile.nidn
             }
         }
         return baseProfile

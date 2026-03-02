@@ -39,7 +39,7 @@ export class AuthServices {
             throw new ApiError(httpStatusCode.UNAUTHORIZED, 'Email atau Password salah!');
         }
         const existingLoginUser = await prisma.token.findFirst({
-            where: { userId: user.id, type: TokenTypes.REFRESH },
+            where: { userId: user.id, type: 'REFRESH' },
             orderBy: { createdAt: 'desc' },
         });
         
@@ -56,7 +56,7 @@ export class AuthServices {
 
     static async logout(refreshToken: string) {
         const getRefreshToken = await prisma.token.findFirst({
-            where: { token: refreshToken, type: TokenTypes.REFRESH, blacklisted: false }
+            where: { token: refreshToken, type: 'REFRESH', blacklisted: false }
         });
         
         if (!getRefreshToken) {
@@ -102,7 +102,7 @@ export class AuthServices {
             prisma.token.deleteMany({
                 where: {
                     userId: getUser.id,
-                    type: TokenTypes.VERIFY_EMAIL
+                    type: 'VERIFY_EMAIL'
                 }
             })
         ]);
@@ -131,7 +131,7 @@ export class AuthServices {
                     status: 'ACTIVE',
                     updatedAt: new Date()
                 }}),
-            prisma.token.deleteMany({where: { userId: user.id, type: TokenTypes.VERIFY_EMAIL }})
+            prisma.token.deleteMany({where: { userId: user.id, type: 'VERIFY_EMAIL' }})
         ]);
     }
 
@@ -152,7 +152,7 @@ export class AuthServices {
                     where: { id: user.id }, data: { password: hashedPassword}
                 }),
                 prisma.token.deleteMany({
-                    where: { userId: user.id, type: TokenTypes.RESET_PASSWORD }
+                    where: { userId: user.id, type: 'RESET_PASSWORD' }
                 })
             ])
             return updatePassword;

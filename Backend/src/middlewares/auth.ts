@@ -33,7 +33,7 @@ export const auth = (requiredRole?: string[]): MiddlewareHandler => {
       const secret = new TextEncoder().encode(config.jwt.secret)
       const { payload } = await jwtVerify(token, secret)
 
-      if (payload.type !== 'access') {
+      if (payload.type !== 'ACCESS') {
         throw new HTTPException(
           httpStatusCode.UNAUTHORIZED as ContentfulStatusCode,
           { message: 'Silahkan lakukan verifikasi!' }

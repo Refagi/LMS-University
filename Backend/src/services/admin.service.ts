@@ -1,5 +1,5 @@
 import httpStatusCode from 'http-status-codes';
-import prisma from '../../prisma/client.js';
+import prisma from '@/../prisma/client.js';
 import { ApiError } from '@/utils/ApiError.js';
 import { Prisma } from '@/generated/prisma/client.js';
 import { config } from '@/config/config.js';
@@ -25,34 +25,67 @@ class AdminServices {
   }
 
   static async getAllUsers(options: GetAllUsers) {
-    const { page = 1, limit = 10, search, role, status, faculty, studyProgram, sortBy = 'fullName', sortOrder } = options;
+    const { page = 1, limit = 10, search, role, status, faculty, studyProgram, sortBy = 'createdAt', sortOrder = 'desc' } = options;
     const skip = (page - 1) * limit;
     const where: Prisma.UserWhereInput = {
       ...(role && { role }),
       ...(status && { status }),
+    }
 
-      ...(search && {
-        OR: [
-          { email: { contains: search, mode: 'insensitive' } },
-          {
-            profile: {
-              OR: [
-                { fullName: { contains: search, mode: 'insensitive' } },
-                { npm: { contains: search, mode: 'insensitive' } },
-                { nidn: { contains: search, mode: 'insensitive' } },
-              ]
+    if (search) {
+      where.OR = [
+        { email: { contains: search, mode: 'insensitive' } },
+        {
+        Profile: {
+          is: {
+            OR: [
+              { fullName: { contains: search, mode: 'insensitive' as const } },
+              { npm: { contains: search, mode: 'insensitive' as const } },
+              { nidn: { contains: search, mode: 'insensitive' as const } },
+              { nip: { contains: search, mode: 'insensitive' as const } },
+            ]
+          }
+        }
+      }
+      ]
+    }
+
+    const profileConditions: any[] = [];
+
+    if (faculty) {
+      profileConditions.push({
+        StudyProgram: {
+          is: {
+            Faculty: { 
+              is: { name: { contains: faculty, mode: 'insensitive' as const }}
             }
           }
-        ]
-      }),
-      ...(faculty &&  {profile: {faculty: { contains: faculty, mode: 'insensitive' }}}),
-      ...(studyProgram &&  {profile: {StudyProgram: { contains: studyProgram, mode: 'insensitive' }}}),
+        }
+      })
+    }
+
+    if (studyProgram) {
+      profileConditions.push({
+        StudyProgram: {
+          is: {
+            name: { contains: studyProgram, mode: 'insensitive' as const }
+          }
+        }
+      })
+    }
+
+    if(profileConditions.length > 0) {
+      where.Profile = {
+        is: {
+          AND: profileConditions
+        }
+      }
     }
 
     let orderBy: Prisma.UserOrderByWithRelationInput;
     if (sortBy === 'fullName') {
       orderBy = {
-        profile: {
+        Profile: {
           fullName: sortOrder
         }
       };
@@ -66,22 +99,19 @@ class AdminServices {
       prisma.user.findMany({
         where,
         include: {
-          profile: {
-            select: {
-              fullName: true,
-              phone: true,
-              npm: true,
-              nidn: true,
-              faculty: true,
-              StudyProgram: true,
-              image: true,
-              generation: true
+          Profile: {
+            include: {
+              StudyProgram: {
+                include: {
+                  Faculty: true
+                }
+              }
             }
           },
           _count: {
             select: {
-              enrollments: true,
-              courses: true,
+              Enrollment: true,
+              Course: true,
             }
           }
         },
@@ -104,10 +134,30 @@ class AdminServices {
         status: user.status,
         isEmailVerified: user.isEmailVerified,
         createdAt: user.createdAt,
-        profile: user.profile,
+        profile: user.Profile ? {
+          fullName: user.Profile.fullName,
+          phone: user.Profile.phone,
+          npm: user.Profile.npm,
+          nidn: user.Profile.nidn,
+          nip: user.Profile.nip,
+          image: user.Profile.image,
+          generation: user.Profile.generation,
+          address: user.Profile.address,
+          city: user.Profile.city,
+          province: user.Profile.province,
+          studyProgram: user.Profile.StudyProgram ? {
+            name: user.Profile.StudyProgram.name,
+            code: user.Profile.StudyProgram.code,
+            degree: user.Profile.StudyProgram.degree,
+            faculty: user.Profile.StudyProgram.Faculty ? {
+              name: user.Profile.StudyProgram.Faculty.name,
+              code: user.Profile.StudyProgram.Faculty.code,
+            } : null
+          } : null
+        } : null,
         stats: {
-          enrollments: user._count.enrollments,
-          courses: user._count.courses,
+          enrollments: user._count.Enrollment,
+          courses: user._count.Course,
         }
       })),
       pagination: {

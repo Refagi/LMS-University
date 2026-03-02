@@ -17,12 +17,11 @@ export const getAllUsersQuerySchema = z.object({
   page: z.string().optional().default('1').transform(Number),
   limit: z.string().optional().default('10').transform(Number),
   search: z.string().optional(),
-  role: z.enum(['ADMIN', 'DOSEN', 'MAHASISWA']).optional(),
+  role: z.enum(['SUPER_ADMIN','ADMIN', 'DOSEN', 'MAHASISWA']).optional(),
   status: z.enum(['PENDING', 'ACTIVE', 'SUSPENDED']).optional(),
   faculty: z.string().optional(),
   studyProgram: z.string().optional(),
-  isEmailVerified: z.string().optional().transform(val => val === 'true'),  
-  sortBy: z.enum(['email', 'fullName', 'role', 'status']).optional().default('fullName'),
+  sortBy: z.enum(['email', 'fullName', 'role', 'status', 'createdAt']).optional().default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 });
 

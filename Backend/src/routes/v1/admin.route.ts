@@ -8,7 +8,7 @@ const adminRoute = new Hono();
 
 adminRoute.post('/createUser', auth(['SUPER_ADMIN', 'ADMIN']), validateMiddlewares.validateJson(createUser), AdminController.createUser);
 adminRoute.get('/users', auth(['SUPER_ADMIN', 'ADMIN']), validateMiddlewares.validateQuery(getAllUsersQuerySchema), AdminController.getAllUser);
-adminRoute.get('/:userId', auth(['SUPER_ADMIN', 'ADMIN']), validateMiddlewares.validateParam(userId), AdminController.getUser);
+adminRoute.get('/getUser/:userId', auth(['SUPER_ADMIN', 'ADMIN']), validateMiddlewares.validateParam(userId), AdminController.getUser);
 adminRoute.patch('/updateUserStatus/:userId', auth(['SUPER_ADMIN', 'ADMIN']), 
                 validateMiddlewares.validateParam(userId), 
                 validateMiddlewares.validateJson(updateUserStatusByAdmin), 

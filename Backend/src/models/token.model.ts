@@ -21,14 +21,14 @@ export interface TokenTypeConfig {
 
 
 export enum TokenTypes {
-  ACCESS = 'access',
-  REFRESH = 'refresh',
-  RESET_PASSWORD  = 'resetPassword',
-  VERIFY_EMAIL = 'verifyEmail',
-  UPDATE_EMAIL = 'updateEmail'
+  ACCESS = 'ACCESS',
+  REFRESH = 'REFRESH',
+  RESET_PASSWORD  = 'RESET_PASSWORD',
+  VERIFY_EMAIL = 'VERIFY_EMAIL',
+  UPDATE_EMAIL = 'UPDATE_EMAIL'
 };
 
-export type tokenTypes = 'access' | 'refresh'| 'resetPassword' |  'verifyEmail' | 'updateEmail';
+export type tokenTypes = 'ACCESS' | 'REFRESH'| 'RESET_PASSWORD' |  'VERIFY_EMAIL' | 'UPDATE_EMAIL';
 
 export interface TypeSaveToken {
   token: string, 

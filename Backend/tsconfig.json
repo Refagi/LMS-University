@@ -28,5 +28,9 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
-  }
+  },
+  "include": [
+    "src",
+    "prisma", "prisma/client.ts"
+  ],
 }
