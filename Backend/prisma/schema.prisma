@@ -1,0 +1,424 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Announcement {
+  id        String   @id @default(uuid())
+  courseId  String
+  authorId  String
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  User      User     @relation(fields: [authorId], references: [id])
+  Course    Course   @relation(fields: [courseId], references: [id])
+}
+
+model Assignment {
+  id          String         @id @default(uuid())
+  courseId    String
+  title       String
+  description String
+  fileUrl     String?
+  maxScore    Float          @default(100)
+  type        AssignmentType
+  deadline    DateTime
+  createdAt   DateTime       @default(now())
+  Course      Course         @relation(fields: [courseId], references: [id])
+  Submission  Submission[]
+
+  @@index([courseId])
+  @@index([deadline])
+}
+
+model Attendance {
+  id        String           @id @default(uuid())
+  classId   String
+  userId    String
+  date      DateTime
+  status    AttendanceStatus
+  notes     String?
+  createdAt DateTime         @default(now())
+  Class     Class            @relation(fields: [classId], references: [id])
+  User      User             @relation(fields: [userId], references: [id])
+
+  @@unique([classId, userId, date])
+  @@index([classId, date])
+  @@index([userId])
+}
+
+model AuditLog { 
+  id        String   @id @default(uuid())
+  action    String
+  actorId   String
+  metadata  Json?
+  createdAt DateTime @default(now())
+  User      User     @relation(fields: [actorId], references: [id])
+}
+
+model Class {
+  id         String       @id @default(uuid())
+  name       String       @unique
+  userId     String
+  courseId   String
+  semesterId String
+  scheduleId String
+  room       String
+  capacity   Int?
+  Attendance Attendance[]
+  Course     Course       @relation(fields: [courseId], references: [id])
+  Schedule   Schedule     @relation(fields: [scheduleId], references: [id])
+  Semester   Semester     @relation(fields: [semesterId], references: [id])
+  User       User         @relation(fields: [userId], references: [id])
+  Enrollment Enrollment[]
+  Exam       Exam[]
+
+  @@index([courseId])
+  @@index([semesterId])
+  @@index([userId])
+}
+
+model Course {
+  id             String         @id @default(uuid())
+  studyProgramId String
+  courseCode     String         @unique
+  title          String
+  sks            Int
+  description    String
+  syllabus       String?
+  userId         String
+  semesterId     String
+  isActive       Boolean        @default(true)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  Announcement   Announcement[]
+  Assignment     Assignment[]
+  Class          Class[]
+  Semester       Semester       @relation(fields: [semesterId], references: [id])
+  StudyProgram   StudyProgram   @relation(fields: [studyProgramId], references: [id])
+  User           User           @relation(fields: [userId], references: [id])
+  Exam           Exam[]
+  ForumThread    ForumThread[]
+  Material       Material[]
+
+  @@unique([courseCode, studyProgramId])
+  @@index([courseCode])
+  @@index([studyProgramId])
+  @@index([userId])
+}
+
+model Enrollment {
+  id         String   @id @default(uuid())
+  userId     String
+  classId    String
+  semesterId String
+  Class      Class    @relation(fields: [classId], references: [id])
+  Semester   Semester @relation(fields: [semesterId], references: [id])
+  User       User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, classId])
+}
+
+model Exam {
+  id          String       @id @default(uuid())
+  classId     String
+  courseId    String
+  title       String
+  description String?
+  type        examType
+  room        String?
+  date        DateTime
+  Class       Class        @relation(fields: [classId], references: [id])
+  Course      Course       @relation(fields: [courseId], references: [id])
+  ExamResult  ExamResult[]
+
+  @@index([classId])
+  @@index([date])
+}
+
+model ExamResult {
+  id        String   @id @default(uuid())
+  examId    String
+  userId    String
+  score     Float
+  feedback  String?
+  gradedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+  Exam      Exam     @relation(fields: [examId], references: [id])
+  User      User     @relation(fields: [userId], references: [id])
+
+  @@unique([examId, userId])
+  @@index([userId])
+}
+
+model Faculty {
+  id           String         @id @default(uuid())
+  code         String         @unique
+  name         String         @unique
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  StudyProgram StudyProgram[]
+
+  @@index([code])
+}
+
+model ForumComment {
+  id        String    @id @default(uuid())
+  postId    String
+  authorId  String
+  content   String
+  createdAt DateTime  @default(now())
+  User      User      @relation(fields: [authorId], references: [id])
+  ForumPost ForumPost @relation(fields: [postId], references: [id])
+}
+
+model ForumPost {
+  id           String         @id @default(uuid())
+  threadId     String
+  authorId     String
+  content      String
+  createdAt    DateTime       @default(now())
+  ForumComment ForumComment[]
+  User         User           @relation(fields: [authorId], references: [id])
+  ForumThread  ForumThread    @relation(fields: [threadId], references: [id])
+}
+
+model ForumThread {
+  id        String      @id @default(uuid())
+  CourseId  String
+  authorId  String
+  title     String
+  createdAt DateTime    @default(now())
+  ForumPost ForumPost[]
+  Course    Course      @relation(fields: [CourseId], references: [id])
+  User      User        @relation(fields: [authorId], references: [id])
+}
+
+model Grade {
+  id           String     @id @default(uuid())
+  submissionId String     @unique
+  userId       String
+  score        Float
+  feedback     String?
+  maxScore     Float      @default(100)
+  percentage   Float?
+  gradedBy     String?
+  gradedAt     DateTime   @default(now())
+  Submission   Submission @relation(fields: [submissionId], references: [id])
+  User         User       @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model Material {
+  id          String   @id @default(uuid())
+  courseId    String
+  title       String
+  description String?
+  fileType    String?
+  fileSize    Int?
+  fileUrl     String
+  order       Int
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  Course      Course   @relation(fields: [courseId], references: [id])
+
+  @@index([courseId])
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  type      NotificationType
+  link      String?
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  User      User             @relation(fields: [userId], references: [id])
+}
+
+model Profile {
+  id             String        @id @default(uuid())
+  userId         String        @unique
+  studyProgramId String?
+  fullName       String
+  phone          String        @unique
+  placeOfBirth   String
+  dateOfBirth    DateTime
+  npm            String?       @unique
+  nidn           String?       @unique
+  nip            String?       @unique
+  image          String?
+  generation     String?
+  address        String?
+  city           String?
+  province       String?
+  StudyProgram   StudyProgram? @relation(fields: [studyProgramId], references: [id])
+  User           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([fullName])
+  @@index([nidn])
+  @@index([npm])
+}
+
+model Schedule {
+  id        String  @id @default(uuid())
+  day       String
+  startTime String
+  endTime   String
+  Class     Class[]
+}
+
+model Semester {
+  id         String       @id @default(uuid())
+  name       String
+  type       SemesterType
+  year       Int
+  startDate  DateTime
+  endDate    DateTime
+  isActive   Boolean      @default(false)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Class      Class[]
+  Course     Course[]
+  Enrollment Enrollment[]
+
+  @@index([isActive])
+  @@index([year])
+}
+
+model StudyProgram {
+  id            String    @id @default(uuid())
+  code          String    @unique
+  name          String
+  facultyId     String
+  degree        String
+  accreditation String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  Course        Course[]
+  Profile       Profile[]
+  Faculty       Faculty   @relation(fields: [facultyId], references: [id])
+
+  @@unique([name, facultyId])
+  @@index([code])
+}
+
+model Submission {
+  id           String           @id @default(uuid())
+  assignmentId String
+  userId       String
+  fileUrl      String?
+  status       SubmissionStatus
+  submittedAt  DateTime         @default(now())
+  Grade        Grade?
+  Assignment   Assignment       @relation(fields: [assignmentId], references: [id])
+  User         User             @relation(fields: [userId], references: [id])
+
+  @@unique([assignmentId, userId])
+}
+
+model Token {
+  id          String    @id @default(uuid())
+  token       String    
+  userId      String
+  type        TokenType
+  newEmail    String?
+  expires     DateTime
+  blacklisted Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  User        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id              String         @id @default(uuid())
+  email           String         @unique
+  password        String?
+  status          UserStatus     @default(PENDING)
+  role            Role
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  isEmailVerified Boolean        @default(false)
+  Announcement    Announcement[]
+  Attendance      Attendance[]
+  AuditLog        AuditLog[]
+  Class           Class[]
+  Course          Course[]
+  Enrollment      Enrollment[]
+  ExamResult      ExamResult[]
+  ForumComment    ForumComment[]
+  ForumPost       ForumPost[]
+  ForumThread     ForumThread[]
+  Grade           Grade[]
+  Notification    Notification[]
+  Profile         Profile?
+  Submission      Submission[]
+  Token           Token[]
+}
+
+enum AssignmentType {
+  INDIVIDUAL
+  GROUP
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  SICK
+  PERMISSION
+  LATE
+}
+
+enum NotificationType {
+  SYSTEM
+  ASSIGNMENT
+  GRADE
+  ANNOUNCEMENT
+  FORUM
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  DOSEN
+  MAHASISWA
+}
+
+enum SemesterType {
+  GANJIL
+  GENAP
+}
+
+enum SubmissionStatus {
+  SUBMITTED
+  LATE
+  MISSING
+  GRADED
+}
+
+enum TokenType {
+  ACCESS
+  REFRESH
+  VERIFY_EMAIL
+  RESET_PASSWORD
+  UPDATE_EMAIL
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+}
+
+enum examType {
+  UTS
+  UAS
+  UPM
+  REMEDIAL
+}
