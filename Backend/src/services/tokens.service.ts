@@ -6,7 +6,7 @@ import prisma from '@/../prisma/client.js';
 import { ApiError } from '@/utils/ApiError';
 import type { User, Token, JwtPayload } from '@/models/token.model';
 import httpStatusCode from 'http-status-codes';
-import { AdminServices } from './index';
+import { AdminUserServices } from './index';
 
 
 class TokenService {
@@ -98,7 +98,7 @@ class TokenService {
   
 
   static async generateResetPasswordToken(email: string) {
-    const user = await AdminServices.getUserByEmail(email);
+    const user = await AdminUserServices.getUserByEmail(email);
     if (!user) {
       throw new ApiError(httpStatusCode.NOT_FOUND, 'Pengguna tidak ditemukan!');
     }
@@ -116,7 +116,7 @@ class TokenService {
   }
 
     static async generateUpdateEmailToken(userId: string, newEmail: string) {
-    const user = await AdminServices.getUserById(userId);
+    const user = await AdminUserServices.getUserById(userId);
     if (!user) {
       throw new ApiError(httpStatusCode.NOT_FOUND, 'Pengguna tidak ditemukan!');
     }

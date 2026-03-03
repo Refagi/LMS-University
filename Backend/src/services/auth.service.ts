@@ -1,4 +1,4 @@
-import { TokenServices, StudentServices, AdminServices } from './index';
+import { TokenServices, StudentServices, AdminUserServices } from './index';
 import { ApiError } from '@/utils/ApiError';
 import httpStatusCode from 'http-status-codes';
 import prisma from '@/../prisma/client';
@@ -88,7 +88,7 @@ export class AuthServices {
             throw new ApiError(httpStatusCode.UNAUTHORIZED, 'Invalid Token!');
         }
         
-        const getUser = await AdminServices.getUserById(verifyEmailTokenDoc.userId);
+        const getUser = await AdminUserServices.getUserById(verifyEmailTokenDoc.userId);
         if(!getUser) {
             throw new ApiError(httpStatusCode.NOT_FOUND, 'Pengguna tidak ditemukan!');
         }
@@ -110,7 +110,7 @@ export class AuthServices {
 
     static async activateAccount(userBody: ActivateUserType) {
         const { email, password } = userBody;
-        const user = await AdminServices.getUserByEmail(email);
+        const user = await AdminUserServices.getUserByEmail(email);
         if(!user) {
           throw new ApiError(httpStatusCode.NOT_FOUND, 'Pengguna tidak ditemukan!');
         }
@@ -139,7 +139,7 @@ export class AuthServices {
         try {
             const { token, newPassword } = userBody;
             const resetPasswordTokenDoc = await TokenServices.verifyToken(token, TokenTypes.RESET_PASSWORD);
-            const user = await AdminServices.getUserById(resetPasswordTokenDoc.userId);
+            const user = await AdminUserServices.getUserById(resetPasswordTokenDoc.userId);
             if(!user) {
                 throw new ApiError(httpStatusCode.NOT_FOUND, 'Pengguna tidak ditemukan!');
             }

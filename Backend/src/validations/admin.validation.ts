@@ -25,6 +25,12 @@ export const getAllUsersQuerySchema = z.object({
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 });
 
+export const CreateFakultasSchema = z.object({
+    code: z.string().min(5, 'Code fakultas harus diisi'),
+    name: z.string().min(10, 'Nama fakultas harus diisi'),
+})
+
+export type CreateFakultas = z.infer<typeof CreateFakultasSchema>;
 export type GetAllUsersQuery = z.infer<typeof getAllUsersQuerySchema>;
 export type ParamsId = z.infer<typeof userId>;
 export type CreateUserBody = z.infer<typeof createUser>;

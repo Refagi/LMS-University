@@ -1,16 +1,15 @@
 import httpStatusCode from 'http-status-codes';
 import { ApiError } from '@/utils/ApiError.js';
-import { catchAsync } from '../utils/catchAsync.js';
-import { TokenServices, StudentServices, EmailServices, AdminServices } from '@/services/index.js';
-import { TokenTypes } from '@/models/token.model.js';
+import { catchAsync } from '../../utils/catchAsync.js';
+import { TokenServices, EmailServices, AdminUserServices } from '@/services/index.js';
 import { type  Context } from 'hono'
 import type { ParamsId, CreateUserBody, UpdateUserStatusBody, GetAllUsersQuery } from '@/validations/admin.validation.js';
 import type {  User } from '@/models/user.model.js';
 
-class AdminController {
+class AdminUserController {
   static getUser = catchAsync(async (c: Context) => {
     const { userId } = c.get('parsedParam') as ParamsId;
-    const user = await AdminServices.getUserById(userId)
+    const user = await AdminUserServices.getUserById(userId)
     if(!user) {
       throw new ApiError(httpStatusCode.NOT_FOUND, 'User tidak ditemukan!');
     }
@@ -20,7 +19,7 @@ class AdminController {
 
   static getAllUser = catchAsync(async (c: Context) => {
     const options = c.get('parsedQuery') as GetAllUsersQuery;
-    const users = await AdminServices.getAllUsers(options);
+    const users = await AdminUserServices.getAllUsers(options);
     return c.json({status: httpStatusCode.OK, ...users})
   })
 
@@ -32,11 +31,11 @@ class AdminController {
       throw new ApiError(403, 'Admin tidak bisa membuat admin lain');
     }
 
-    const existingEmail = await AdminServices.getUserByEmail(email);
+    const existingEmail = await AdminUserServices.getUserByEmail(email);
     if(existingEmail) {
       throw new ApiError(httpStatusCode.BAD_REQUEST, 'Email sudah terdaftar!');
     }
-    const user = await AdminServices.createUser({ email, role });
+    const user = await AdminUserServices.createUser({ email, role });
 
     const verifyTokenDoc = await TokenServices.generateVeryfyEmailToken(user);
     await EmailServices.sendVerificationEmail(user.email, verifyTokenDoc);
@@ -50,7 +49,7 @@ class AdminController {
   static updateUserStatusByAdmin = catchAsync(async (c: Context) => {
     const { status } = c.get('parsedJson') as UpdateUserStatusBody;
     const { userId } = c.get('parsedParam') as ParamsId;
-    const updateUser = await AdminServices.updateUserStatusByAdmin({ userId, status });
+    const updateUser = await AdminUserServices.updateUserStatusByAdmin({ userId, status });
     if (!updateUser) {
       throw new ApiError(httpStatusCode.BAD_REQUEST, 'Gagal memperbarui status user!');
     }
@@ -63,12 +62,17 @@ class AdminController {
     if(!checkUser) {
       throw new ApiError(httpStatusCode.UNAUTHORIZED, 'Pengguna belum terverifikasi!')
     }
-    const { user, password } = await AdminServices.resetPasswordByAdmin(userId);
+    const { user, password } = await AdminUserServices.resetPasswordByAdmin(userId);
     await EmailServices.sendVerificationResetPassword(user.email, password);
     return c.json({status: httpStatusCode.OK, message: `Password berhasil direset. Email dengan password sementara telah dikirim, periksa ${user.email}`})
   })
 
+  static deleteUser = catchAsync(async (c: Context) => {
+    const { userId } = c.get('parsedParam') as ParamsId;
+    await AdminUserServices.deleteUserByAdmin(userId);
+    return c.json({status: httpStatusCode.OK, message: 'User berhasil dihapus!'})
+  })
 
 };
 
-export default AdminController;
+export default AdminUserController;

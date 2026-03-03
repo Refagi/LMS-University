@@ -2,14 +2,12 @@ import httpStatusCode from 'http-status-codes';
 import prisma from '@/../prisma/client.js';
 import { ApiError } from '@/utils/ApiError.js';
 import { Prisma } from '@/generated/prisma/client.js';
-import { config } from '@/config/config.js';
 import type { RequestCreateUser, UpdateUserStatusAdmin, GetAllUsers } from '@/models/user.model.js';
-import { TokenServices, StudentServices, AuthServices, EmailServices } from './index';
 import { generateRandomPassword } from '@/utils/randomPass.js';
 
 type User = Prisma.UserGetPayload<{}>;
 
-class AdminServices {
+class AdminUserServices {
   static async getUserByEmail(email: string) {
     const user: User | null = await prisma.user.findUnique({
       where: { email }  
@@ -205,10 +203,10 @@ class AdminServices {
   static async resetPasswordByAdmin (userId: string) {
     const user = await this.getUserById(userId);
     if(!user) {
-      throw new ApiError(httpStatusCode.NOT_FOUND, 'User tidak ditemukan!');
+      throw new ApiError(httpStatusCode.NOT_FOUND, 'Pengguna tidak ditemukan!');
     }
     if(user.status !== 'ACTIVE') {
-      throw new ApiError(httpStatusCode.BAD_REQUEST, 'User tidak aktif!');
+      throw new ApiError(httpStatusCode.BAD_REQUEST, 'Pengguna tidak aktif!');
     }
     if(user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') {
       throw new ApiError(httpStatusCode.FORBIDDEN, 'Tidak dapat mereset password untuk admin!');
@@ -228,6 +226,19 @@ class AdminServices {
     const { password, ...userWithoutPassword } = updatedUser;
     return { user: userWithoutPassword, password: temporaryPassword };
   }
+
+  static async deleteUserByAdmin(userId: string) {
+    const user = await this.getUserById(userId);
+    if(!user) {
+      throw new ApiError(httpStatusCode.NOT_FOUND, 'Pengguna tidak ditemukan!');
+    }
+    if(user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') {
+      throw new ApiError(httpStatusCode.FORBIDDEN, 'Tidak dapat menghapus admin!');
+    }
+    await prisma.user.delete({
+      where: { id: userId }
+    })
+  }
 };
 
-export default AdminServices;
+export default AdminUserServices;
