@@ -1,4 +1,4 @@
-import { TokenServices, StudentServices, AdminUserServices } from './index';
+import { TokenServices, AdminUserServices } from './index';
 import { ApiError } from '@/utils/ApiError';
 import httpStatusCode from 'http-status-codes';
 import prisma from '@/../prisma/client';
@@ -38,18 +38,10 @@ export class AuthServices {
         if (!validPassword) {
             throw new ApiError(httpStatusCode.UNAUTHORIZED, 'Email atau Password salah!');
         }
-        const existingLoginUser = await prisma.token.findFirst({
-            where: { userId: user.id, type: 'REFRESH' },
-            orderBy: { createdAt: 'desc' },
-        });
-        
-        if (existingLoginUser) {
-            await prisma.token.delete({
-                where: {
-                    id: existingLoginUser.id,
-                },
-            });
-        }
+
+        await prisma.token.deleteMany({
+            where: { userId: user.id, type: 'REFRESH' }
+        })
         
         return user;
     }
