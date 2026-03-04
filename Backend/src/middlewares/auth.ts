@@ -51,7 +51,7 @@ export const auth = (requiredRole?: string[]): MiddlewareHandler => {
         )
       }
 
-      if (requiredRole && !user.role.includes(user.role)) {
+      if (requiredRole && !requiredRole.includes(user.role)) {
         throw new HTTPException(
           httpStatusCode.FORBIDDEN as ContentfulStatusCode,
           { message: 'Forbidden!' }

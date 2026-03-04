@@ -18,3 +18,5 @@ export interface CreateFakultasType {
     code: string;
     name: string;
 }
+
+export type UpdateFakultasType = Partial<CreateFakultasType>;

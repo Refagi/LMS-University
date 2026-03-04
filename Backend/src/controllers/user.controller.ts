@@ -1,7 +1,7 @@
 import httpStatusCode from 'http-status-codes';
 import { ApiError } from '@/utils/ApiError.js';
 import { catchAsync } from '../utils/catchAsync.js';
-import {  UserService, TokenServices, EmailServices, AdminServices } from '@/services/index.js';
+import {  UserService, TokenServices, EmailServices, AdminUserServices } from '@/services/index.js';
 import { TokenTypes } from '@/models/token.model.js';
 import type {  User, UpdateUserEmailType } from '@/models/user.model.js';
 import { type  Context } from 'hono'
@@ -15,7 +15,7 @@ class UserController {
             throw new ApiError(httpStatusCode.UNAUTHORIZED, 'Pengguna belum terverifikasi!')
         }
         const { newEmail } = c.get('parsedData') as {newEmail: string}
-        const existingUser = await AdminServices.getUserByEmail(newEmail)
+        const existingUser = await AdminUserServices.getUserByEmail(newEmail)
         if (existingUser) {
             throw new ApiError(httpStatusCode.BAD_REQUEST, 'Email sudah digunakan!')
         }

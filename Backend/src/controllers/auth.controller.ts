@@ -1,8 +1,7 @@
 import httpStatusCode from 'http-status-codes';
 import { ApiError } from '@/utils/ApiError.js';
 import { catchAsync } from '../utils/catchAsync.js';
-import { TokenServices, StudentServices, EmailServices,  AuthServices } from '@/services/index.js';
-import { TokenTypes } from '@/models/token.model.js';
+import { TokenServices, EmailServices,  AuthServices } from '@/services/index.js';
 import { type  Context } from 'hono';
 import { setCookie, getCookie, deleteCookie } from 'hono/cookie'
 import type { LoginBody, LogoutBody, VerifyEmailBody, ActivateAccountBody, ForgotPasswordBody, ResetPasswordBody } from '@/validations/auth.validation.js';

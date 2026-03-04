@@ -3,12 +3,12 @@ import { ApiError } from '@/utils/ApiError.js';
 import { catchAsync } from '../../utils/catchAsync.js';
 import { TokenServices, EmailServices, AdminUserServices } from '@/services/index.js';
 import { type  Context } from 'hono'
-import type { ParamsId, CreateUserBody, UpdateUserStatusBody, GetAllUsersQuery } from '@/validations/admin.validation.js';
+import type { ParamUserId, CreateUserBody, UpdateUserStatusBody, GetAllUsersQuery } from '@/validations/admin.validation.js';
 import type {  User } from '@/models/user.model.js';
 
 class AdminUserController {
   static getUser = catchAsync(async (c: Context) => {
-    const { userId } = c.get('parsedParam') as ParamsId;
+    const { userId } = c.get('parsedParam') as ParamUserId;
     const user = await AdminUserServices.getUserById(userId)
     if(!user) {
       throw new ApiError(httpStatusCode.NOT_FOUND, 'User tidak ditemukan!');
@@ -48,7 +48,7 @@ class AdminUserController {
 
   static updateUserStatusByAdmin = catchAsync(async (c: Context) => {
     const { status } = c.get('parsedJson') as UpdateUserStatusBody;
-    const { userId } = c.get('parsedParam') as ParamsId;
+    const { userId } = c.get('parsedParam') as ParamUserId;
     const updateUser = await AdminUserServices.updateUserStatusByAdmin({ userId, status });
     if (!updateUser) {
       throw new ApiError(httpStatusCode.BAD_REQUEST, 'Gagal memperbarui status user!');
@@ -57,7 +57,7 @@ class AdminUserController {
   });
 
   static resetPasswordByAdmin = catchAsync(async (c: Context) => {
-    const { userId } = c.get('parsedParam') as ParamsId;
+    const { userId } = c.get('parsedParam') as ParamUserId;
     const checkUser = c.get('user') as User
     if(!checkUser) {
       throw new ApiError(httpStatusCode.UNAUTHORIZED, 'Pengguna belum terverifikasi!')
@@ -68,7 +68,7 @@ class AdminUserController {
   })
 
   static deleteUser = catchAsync(async (c: Context) => {
-    const { userId } = c.get('parsedParam') as ParamsId;
+    const { userId } = c.get('parsedParam') as ParamUserId;
     await AdminUserServices.deleteUserByAdmin(userId);
     return c.json({status: httpStatusCode.OK, message: 'User berhasil dihapus!'})
   })
