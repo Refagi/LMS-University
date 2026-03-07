@@ -1,18 +1,17 @@
 import prisma from '@/../prisma/client';
-import { FakultasName } from '@/models/fakultas.model';
+import { FakultasName, AccreditationType } from '@/models/fakultas.model';
 
 const facultiesData = [
-  { code: 'FT', name: FakultasName.FAKULTAS_TEKNIK },
-  { code: 'FEB', name: FakultasName.FAKULTAS_EKONOMI_DAN_BISNIS },
-  { code: 'FH', name: FakultasName.FAKULTAS_HUKUM },
-  { code: 'FK', name: FakultasName.FAKULTAS_KEDOKTERAN },
-  { code: 'FISIP', name: FakultasName.FAKULTAS_ILMU_SOSIAL_DAN_ILMU_POLITIK },
-  { code: 'Faperta', name: FakultasName.FAKULTAS_PERTANIAN },
-  { code: 'FIK', name: FakultasName.FAKULTAS_ILMU_KOMPUTER },
-  { code: 'FPSI', name: FakultasName.FAKULTAS_PSIKOLOGI },
-  { code: 'FKIP', name: FakultasName.FAKULTAS_KEGURUAN_DAN_ILMU_PENDIDIKAN },
-  { code: 'FMIPA', name: FakultasName.FAKULTAS_MATEMATIKA_DAN_ILMU_PENGETAHUAN_ALAM },
-  { code: 'FSD', name: FakultasName.FAKULTAS_SENI_DAN_DESAIN },
+  { code: 'FT', name: FakultasName.FAKULTAS_TEKNIK, accreditation : AccreditationType.BAIK_SEKALI},
+  { code: 'FEB', name: FakultasName.FAKULTAS_EKONOMI_DAN_BISNIS, accreditation: AccreditationType.UNGGUL },
+  { code: 'FH', name: FakultasName.FAKULTAS_HUKUM, accreditation: AccreditationType.BAIK },
+  { code: 'FK', name: FakultasName.FAKULTAS_KEDOKTERAN, accreditation: AccreditationType.BAIK_SEKALI },
+  { code: 'FISIP', name: FakultasName.FAKULTAS_ILMU_SOSIAL_DAN_ILMU_POLITIK, accreditation: AccreditationType.BAIK },
+  { code: 'Faperta', name: FakultasName.FAKULTAS_PERTANIAN, accreditation: AccreditationType.BAIK_SEKALI },
+  { code: 'FIK', name: FakultasName.FAKULTAS_ILMU_KOMPUTER, accreditation: AccreditationType.UNGGUL },
+  { code: 'FPSI', name: FakultasName.FAKULTAS_PSIKOLOGI, accreditation: AccreditationType.BAIK },
+  { code: 'FKIP', name: FakultasName.FAKULTAS_KEGURUAN_DAN_ILMU_PENDIDIKAN, accreditation: AccreditationType.UNGGUL },
+  { code: 'FSRD', name: FakultasName.FAKULTAS_SENI_RUPA_DAN_DESAIN, accreditation: AccreditationType.BAIK },
 ];
 
 export class FacultiesSeedService {

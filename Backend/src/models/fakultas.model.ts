@@ -1,5 +1,3 @@
-import { Prisma } from '@/generated/prisma/client';
-
 export enum FakultasName {
     FAKULTAS_TEKNIK = 'Fakultas Teknik',
     FAKULTAS_EKONOMI_DAN_BISNIS = 'Fakultas Ekonomi dan Bisnis',
@@ -10,13 +8,20 @@ export enum FakultasName {
     FAKULTAS_ILMU_KOMPUTER = 'Fakultas Ilmu Komputer',
     FAKULTAS_PSIKOLOGI = 'Fakultas Psikologi',
     FAKULTAS_KEGURUAN_DAN_ILMU_PENDIDIKAN = 'Fakultas Keguruan dan Ilmu Pendidikan',
-    FAKULTAS_MATEMATIKA_DAN_ILMU_PENGETAHUAN_ALAM = 'Fakultas Matematika dan Ilmu Pengetahuan Alam',
-    FAKULTAS_SENI_DAN_DESAIN = 'Fakultas Seni dan Desain',
+    FAKULTAS_SENI_RUPA_DAN_DESAIN = 'Fakultas Seni dan Desain',
+}
+
+export enum AccreditationType {
+    UNGGUL = 'UNGGUL',
+    BAIK_SEKALI = 'BAIK_SEKALI',
+    BAIK = 'BAIK',
+    TIDAK_AKREDITASI = 'TIDAK_AKREDITASI'
 }
 
 export interface CreateFakultasType {
     code: string;
     name: string;
+    accreditation: 'UNGGUL' | 'BAIK_SEKALI' | 'BAIK' | 'TIDAK_AKREDITASI';
 }
 
 export type UpdateFakultasType = Partial<CreateFakultasType>;

@@ -51,7 +51,7 @@ model Attendance {
   @@index([userId])
 }
 
-model AuditLog { 
+model AuditLog {
   id        String   @id @default(uuid())
   action    String
   actorId   String
@@ -159,6 +159,7 @@ model Faculty {
   id           String         @id @default(uuid())
   code         String         @unique
   name         String         @unique
+  accreditation AccreditationType
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   StudyProgram StudyProgram[]
@@ -295,10 +296,10 @@ model Semester {
 model StudyProgram {
   id            String    @id @default(uuid())
   code          String    @unique
-  name          String
+  name          String    @unique
   facultyId     String
   degree        String
-  accreditation String?
+  accreditation AccreditationType
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   Course        Course[]
@@ -325,7 +326,7 @@ model Submission {
 
 model Token {
   id          String    @id @default(uuid())
-  token       String    
+  token       String
   userId      String
   type        TokenType
   newEmail    String?
@@ -360,6 +361,13 @@ model User {
   Profile         Profile?
   Submission      Submission[]
   Token           Token[]
+}
+
+enum AccreditationType {
+  UNGGUL
+  BAIK_SEKALI
+  BAIK
+  TIDAK_AKREDITASI
 }
 
 enum AssignmentType {

@@ -34,16 +34,51 @@ export type GetAllUsersQuery = z.infer<typeof getAllUsersQuerySchema>;
 
 
 export const facultasId = z.object({
-    fakultasId: z.string().uuid()
+    fakultasId: z.uuid().min(1)
 })
 export type ParamFakutasId = z.infer<typeof facultasId>;
 
-export const CreateFakultasBody = z.object({
+export const createFakultasBody = z.object({
     code: z.string().min(3, 'Code fakultas harus diisi'),
     name: z.string().min(10, 'Nama fakultas harus diisi'),
+    accreditation: z.enum(['UNGGUL', 'BAIK_SEKALI', 'BAIK', 'TIDAK_AKREDITASI'])
 })
-export type CreateFakultas = z.infer<typeof CreateFakultasBody>;
+export type CreateFakultas = z.infer<typeof createFakultasBody>;
 
 
-export const UpdateFakultasSchema = CreateFakultasBody.partial();
-export type UpdateFakultas = z.infer<typeof UpdateFakultasSchema>;
+export const updateFakultasBody = z.object({
+    code: z.string().min(3).optional(),
+    name: z.string().min(10).optional(),
+    accreditation: z.enum(['UNGGUL', 'BAIK_SEKALI', 'BAIK', 'TIDAK_AKREDITASI']).optional(),
+})
+export type UpdateFakultas = z.infer<typeof updateFakultasBody>;
+
+
+export const programStudyId = z.object({
+    programStudyId: z.uuid().min(1)
+})
+export type ParamProgramStudyId = z.infer<typeof programStudyId>;
+
+export const createStudyProgramBody = z.object({
+    code: z.string().min(3, 'Code program studi harus diisi'),
+    name: z.string().min(10, 'Nama program studi harus diisi'),
+    facultyId: z.uuid().min(1, 'ID fakultas harus diisi'),
+    degree: z.string().min(2, 'Gelar program studi harus diisi'),
+    accreditation: z.enum(['UNGGUL', 'BAIK_SEKALI', 'BAIK', 'TIDAK_AKREDITASI'])
+})
+export type CreateStudyProgram = z.infer<typeof createStudyProgramBody>;
+
+export const getAllProgramStudySchema = z.object({
+    page: z.string().optional().default('1').transform(Number),
+    limit: z.string().optional().default('5').transform(Number),
+    search: z.string().optional(),
+})
+export type GetAllProgramStudy = z.infer<typeof getAllProgramStudySchema>;
+
+export const updateProgramStudyBody = z.object({
+    code: z.string().min(3).optional(),
+    name: z.string().min(10).optional(),
+    degree: z.string().min(2).optional(),
+    accreditation: z.enum(['UNGGUL', 'BAIK_SEKALI', 'BAIK', 'TIDAK_AKREDITASI']).optional(),
+})
+export type UpdateProgramStudy = z.infer<typeof updateProgramStudyBody>;
