@@ -1,5 +1,4 @@
-import { Prisma } from '@/generated/prisma/client';
-import { AccreditationType } from './fakultas.model';
+import { string } from "zod";
 
 export enum ProgramStudyName {
     TEKNIK_ELEKTRO = 'Teknik Elektro',
@@ -71,7 +70,7 @@ export interface CreateStudyProgramType {
     accreditation: 'UNGGUL' | 'BAIK_SEKALI' | 'BAIK' | 'TIDAK_AKREDITASI';
 }
 
-export interface UpdateStudyProgramType extends Partial<Omit<CreateStudyProgramType, 'facultyId'>> {}
+export interface UpdateStudyProgramType extends Partial<Omit<CreateStudyProgramType, 'facultyId'>> { programStudyId: string }
 
 export interface GetAllProgramStudy {
   page?: number;

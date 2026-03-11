@@ -3,12 +3,12 @@ import { ApiError } from '@/utils/ApiError.js';
 import { catchAsync } from '../../utils/catchAsync.js';
 import { AdminFakultasService } from '@/services/index.js';
 import { type  Context } from 'hono'
-import type { ParamFakutasId, CreateFakultas, UpdateFakultas } from '@/validations/admin.validation.js';
+import type { ParamFakutasId, CreateFakultasBody, UpdateFakultasBody } from '@/validations/admin.validation.js';
 import { AccreditationType } from '@/models/fakultas.model.js';
 
 class AdminFacultyController {
     static createFakultas = catchAsync(async (c: Context) => {
-        const { code, name, accreditation } = c.get('parsedJson') as CreateFakultas;
+        const { code, name, accreditation } = c.get('parsedJson') as CreateFakultasBody;
         const existingFakultas = await AdminFakultasService.getFacultasByCode(code);
         if (existingFakultas) {
             throw new ApiError(httpStatusCode.BAD_REQUEST, 'Fakultas dengan code tersebut sudah ada!');
@@ -33,8 +33,8 @@ class AdminFacultyController {
 
     static updateFakultas = catchAsync(async (c: Context) => {
         const { fakultasId } = c.get('parsedParam') as ParamFakutasId;
-        const body = c.get('parsedJson') as UpdateFakultas;
-        const fakultas = await AdminFakultasService.updateFakultas(fakultasId, body);
+        const body = c.get('parsedJson') as UpdateFakultasBody;
+        const fakultas = await AdminFakultasService.updateFakultas({fakultasId, ...body});
         return c.json({message: 'Fakultas berhasil diperbarui!', status: httpStatusCode.OK, data: fakultas})
     })
 

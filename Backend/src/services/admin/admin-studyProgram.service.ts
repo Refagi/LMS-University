@@ -3,7 +3,6 @@ import prisma from '@/../prisma/client.js';
 import { ApiError } from '@/utils/ApiError.js';
 import type { ProgramStudyName, CreateStudyProgramType, GetAllProgramStudy, UpdateStudyProgramType } from '@/models/studyProgram.js';
 import { Prisma } from '@/generated/prisma/client';
-import { programStudyId } from '../../validations/admin.validation';
 
 class AdminStudyProgramService {
   static async createProgramStudy (body: CreateStudyProgramType) {
@@ -81,15 +80,23 @@ class AdminStudyProgramService {
     }
   }
 
-  static async updateProgramStudy (programStudyId: string, body: UpdateStudyProgramType) {
+  static async updateProgramStudy (body: UpdateStudyProgramType) {
+    const { programStudyId } = body;
+    const existingProgramStudy = await this.getProgramStudyById(programStudyId);
+    if (!existingProgramStudy) {
+     throw new ApiError(httpStatusCode.NOT_FOUND, 'Program Study tidak ditemukan!');
+    }
     const updateData = {
       ...(body.code !== undefined && { code: body.code }),
       ...(body.name !== undefined && { name: body.name as ProgramStudyName }),
       ...(body.degree !== undefined && { degree: body.degree }),
       ...(body.accreditation !== undefined && { accreditation: body.accreditation }),
       };
+      if (Object.keys(updateData).length === 0) {
+        throw new ApiError(400, 'Tidak ada field yang diupdate');
+      }
     const programStudy = await prisma.studyProgram.update({
-      where: { id: programStudyId },
+      where: { id: existingProgramStudy.id },
       data: updateData
     })
     return programStudy;

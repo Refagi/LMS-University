@@ -48,22 +48,26 @@ class AdminFakultasService {
         return fakultas;
     }
 
-    static async updateFakultas (fakultasId: string, body: UpdateFakultasType) {
+    static async updateFakultas (body: UpdateFakultasType) {
+      const { fakultasId } = body;
+      const existingFakultas = await this.getFacultasById(fakultasId);
+      if (!existingFakultas) {
+        throw new ApiError(httpStatusCode.NOT_FOUND, 'Fakultas tidak ditemukan!');
+      }
         const updateData = {
         ...(body.code !== undefined && { code: body.code }),
         ...(body.name !== undefined && { name: body.name as FakultasName }),
         ...(body.accreditation !== undefined && { accreditation: body.accreditation }),
       };
-
       if (Object.keys(updateData).length === 0) {
         throw new ApiError(400, 'Tidak ada field yang diupdate');
       }
-        const fakultas = await prisma.faculty.update({
-            where: { id: fakultasId },
-            data: updateData
-        })
+      const fakultas = await prisma.faculty.update({
+        where: { id: existingFakultas.id },
+        data: updateData
+      })
 
-        return fakultas;
+      return fakultas;
     }
 
     static async deleteFakultas (fakultasId: string) {

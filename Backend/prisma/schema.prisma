@@ -86,7 +86,7 @@ model Course {
   id             String         @id @default(uuid())
   studyProgramId String
   courseCode     String         @unique
-  title          String
+  title          String         @unique
   sks            Int
   description    String
   syllabus       String?
@@ -277,7 +277,7 @@ model Schedule {
 
 model Semester {
   id         String       @id @default(uuid())
-  name       String
+  name       String       @unique
   type       SemesterType
   year       Int
   startDate  DateTime

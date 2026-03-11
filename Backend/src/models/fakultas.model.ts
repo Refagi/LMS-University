@@ -24,4 +24,4 @@ export interface CreateFakultasType {
     accreditation: 'UNGGUL' | 'BAIK_SEKALI' | 'BAIK' | 'TIDAK_AKREDITASI';
 }
 
-export type UpdateFakultasType = Partial<CreateFakultasType>;
+export type UpdateFakultasType = Partial<CreateFakultasType> & { fakultasId: string };

@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { AdminUserController, AdminFacultyController, AdminStudyProgramController } from "@/controllers/index.js";
+import { AdminUserController, AdminFacultyController, AdminStudyProgramController, AdminSemesterController } from "@/controllers/index.js";
 import { auth } from "@/middlewares/auth";
 import { validateMiddlewares } from "@/middlewares/validate.js";
 import {
@@ -9,8 +9,13 @@ import {
   getAllUsersQuerySchema,
   createFakultasBody,
   facultasId,
-  createStudyProgramBody,
-  programStudyId
+  createProgramStudySchema,
+  updateProgramStudySchema,
+  programStudyId,
+  getAllProgramStudySchema,
+  semesterId,
+  createSemesterScheme,
+  activateSemesterSchema
  } from "@/validations/admin.validation.js";
 
 const adminRoute = new Hono();
@@ -34,13 +39,27 @@ adminRoute.patch('/faculties/:fakultasId', auth(['SUPER_ADMIN']),
                 AdminFacultyController.updateFakultas);
 adminRoute.delete('/faculties/:fakultasId', auth(['SUPER_ADMIN']), validateMiddlewares.validateParam(facultasId), AdminFacultyController.deleteFakultas)
 
-adminRoute.post('/study-programs', auth(['SUPER_ADMIN']), validateMiddlewares.validateJson(createStudyProgramBody), AdminStudyProgramController.createProgramStudy)
+adminRoute.post('/study-programs', auth(['SUPER_ADMIN']), validateMiddlewares.validateJson(createProgramStudySchema), AdminStudyProgramController.createProgramStudy)
 adminRoute.get('/study-programs/:programStudyId', auth(['SUPER_ADMIN', 'ADMIN']), validateMiddlewares.validateParam(programStudyId), AdminStudyProgramController.getProgramStudy)
-adminRoute.get('/study-programs', auth(['SUPER_ADMIN', 'ADMIN']), AdminStudyProgramController.getAllProgramStudy)
+adminRoute.get('/study-programs', auth(['SUPER_ADMIN', 'ADMIN']), validateMiddlewares.validateQuery(getAllProgramStudySchema), AdminStudyProgramController.getAllProgramStudy)
 adminRoute.patch('/study-programs/:programStudyId', auth(['SUPER_ADMIN']),
                 validateMiddlewares.validateParam(programStudyId),
-                validateMiddlewares.validateJson(createStudyProgramBody),
+                validateMiddlewares.validateJson(updateProgramStudySchema),
                 AdminStudyProgramController.updateProgramStudy);
 adminRoute.delete('/study-programs/:programStudyId', auth(['SUPER_ADMIN']), validateMiddlewares.validateParam(programStudyId), AdminStudyProgramController.deleteProgramStudy)
+
+
+adminRoute.post('/semester', auth(['SUPER_ADMIN']), validateMiddlewares.validateJson(createSemesterScheme), AdminSemesterController.createSemester)
+adminRoute.get('/semester', auth(['SUPER_ADMIN', 'ADMIN']), AdminSemesterController.getAllSemester)
+adminRoute.get('/semester/:semesterId', auth(['SUPER_ADMIN', 'ADMIN']), validateMiddlewares.validateParam(semesterId), AdminSemesterController.getSemesterById)
+adminRoute.patch('/semester/:semesterId/status', auth(['SUPER_ADMIN']),
+                validateMiddlewares.validateParam(semesterId),
+                validateMiddlewares.validateJson(activateSemesterSchema),
+                AdminSemesterController.activateSemester);
+adminRoute.patch('/semester/:semesterId', auth(['SUPER_ADMIN']),
+                validateMiddlewares.validateParam(semesterId),
+                validateMiddlewares.validateJson(createSemesterScheme),
+                AdminSemesterController.updateSemester);
+adminRoute.delete('/semester/:semesterId', auth(['SUPER_ADMIN']), validateMiddlewares.validateParam(semesterId), AdminSemesterController.deleteSemester)
 
 export default adminRoute;
