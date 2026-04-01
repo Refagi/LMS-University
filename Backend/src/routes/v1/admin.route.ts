@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { AdminUserController, AdminFacultyController, AdminStudyProgramController, AdminSemesterController } from "@/controllers/index.js";
+import { AdminUserController, AdminFacultyController, AdminStudyProgramController, AdminSemesterController, AdminScheduleController } from "@/controllers/index.js";
 import { auth } from "@/middlewares/auth";
 import { validateMiddlewares } from "@/middlewares/validate.js";
 import {
@@ -15,7 +15,10 @@ import {
   getAllProgramStudySchema,
   semesterId,
   createSemesterScheme,
-  activateSemesterSchema
+  activateSemesterSchema,
+  createScheduleSchema,
+  updateScheduleSchema,
+  scheduleId
  } from "@/validations/admin.validation.js";
 
 const adminRoute = new Hono();
@@ -61,5 +64,15 @@ adminRoute.patch('/semester/:semesterId', auth(['SUPER_ADMIN']),
                 validateMiddlewares.validateJson(createSemesterScheme),
                 AdminSemesterController.updateSemester);
 adminRoute.delete('/semester/:semesterId', auth(['SUPER_ADMIN']), validateMiddlewares.validateParam(semesterId), AdminSemesterController.deleteSemester)
+
+
+adminRoute.post('/schedules', auth(['SUPER_ADMIN', 'ADMIN']), validateMiddlewares.validateJson(createScheduleSchema), AdminScheduleController.createSchedule)
+adminRoute.get('/schedules', auth(['SUPER_ADMIN', 'ADMIN']), AdminScheduleController.getAllSchedule)
+adminRoute.get('/schedules/:scheduleId', auth(['SUPER_ADMIN', 'ADMIN']), validateMiddlewares.validateParam(scheduleId), AdminScheduleController.getScheduleById)
+adminRoute.patch('/schedules/:scheduleId', auth(['SUPER_ADMIN', 'ADMIN']),
+                validateMiddlewares.validateParam(scheduleId),
+                validateMiddlewares.validateJson(updateScheduleSchema),
+                AdminScheduleController.updateSchedule);
+adminRoute.delete('/schedules/:scheduleId', auth(['SUPER_ADMIN', 'ADMIN']), validateMiddlewares.validateParam(scheduleId), AdminScheduleController.deleteSchedule)
 
 export default adminRoute;

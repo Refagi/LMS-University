@@ -4,6 +4,8 @@ import { MahasiswaSeedService } from './services/mahasiswa-seed.service'
 import { FacultiesSeedService } from './services/fakultas-seed.service'
 import { StudyProgramsSeedService } from './services/programStudy-seed.service'
 import { SemestersSeedService } from './services/semester-seed.service'
+import { DosenSeedService } from './services/doesn-seed.service'
+import { SchedulesSeedService } from './services/schedule-seed.service'
 
 async function main() {
   const superAdminSeed = new SuperAdminSeedService(
@@ -14,6 +16,9 @@ async function main() {
     'adminsatu@gmail.com',
     'adminsatu123#'
  )
+
+ const dosenSeed = new DosenSeedService(20)
+
  const mahasiswaSeed = new MahasiswaSeedService(50)
 
  const fakultasSeed = new FacultiesSeedService()
@@ -22,12 +27,15 @@ async function main() {
 
  const semestersSeed = new SemestersSeedService()
 
+ const scheduleSeed = new SchedulesSeedService()
+
   // await Promise.all([
   //   await superAdminSeed.execute(),
   //   adminSeed.execute(),
   //   mahasiswaSeed.execute()
   // ])
-  await semestersSeed.execute()
+  await scheduleSeed.execute()
+  // await semestersSeed.execute()
   // await fakultasSeed.execute()
   // await studyProgramsSeed.execute()
 }

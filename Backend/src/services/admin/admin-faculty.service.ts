@@ -16,9 +16,6 @@ class AdminFakultasService {
                 accreditation
             }
         })
-        if (!fakultas) {
-            throw new ApiError(httpStatusCode.BAD_REQUEST, 'Gagl membuat fakultas');
-        }
         return fakultas;
     }
 

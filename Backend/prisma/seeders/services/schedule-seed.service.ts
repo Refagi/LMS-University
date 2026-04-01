@@ -1,6 +1,5 @@
 import prisma from '@/../prisma/client'
-import { type ScheduleData } from '@/models/schedule.model.js'
-import { faker } from '@faker-js/faker'
+import { type ScheduleType } from '@/models/schedule.model.js'
 
 const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
 
@@ -19,7 +18,7 @@ const timeSlots = [
   { startTime: '17:10', endTime: '18:00' },
 ];
 
-const schedulesData: ScheduleData[] = days.flatMap(day =>
+const schedulesData: ScheduleType[] = days.flatMap(day =>
   timeSlots.map(slot => ({
     day,
     startTime: slot.startTime,

@@ -103,3 +103,35 @@ export const activateSemesterSchema = z.object({
     isActive: z.boolean()
 })
 export type ActivateSemesterBody = z.infer<typeof activateSemesterSchema>;
+
+export const updateSemesterSchema = z.object({
+    name: z.string().min(5).optional(),
+    type: z.enum(['GANJIL', 'GENAP']).optional(),
+    year: z.number().optional(),
+    startDate: z.date().optional(),
+    endDate: z.date().optional(),
+})
+export type UpdateSemesterBody = z.infer<typeof updateSemesterSchema>;
+
+
+export const scheduleId = z.object({
+    scheduleId: z.uuid().min(1)
+})
+
+export type ParamScheduleId = z.infer<typeof scheduleId>;
+
+export const createScheduleSchema = z.object({
+    day: z.string().min(4),
+    startTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Format waktu harus HH:mm'),
+    endTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Format waktu harus HH:mm'),
+});
+
+export type CreateScheduleBody = z.infer<typeof createScheduleSchema>;
+
+export const updateScheduleSchema = z.object({
+    day: z.string().min(4).optional(),
+    startTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Format waktu harus HH:mm').optional(),
+    endTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Format waktu harus HH:mm').optional(),
+})
+
+export type UpdateScheduleBody = z.infer<typeof updateScheduleSchema>;

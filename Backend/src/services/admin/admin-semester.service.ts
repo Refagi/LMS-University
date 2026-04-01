@@ -64,7 +64,7 @@ export class AdminSemesterService {
       ...(body.endDate !== undefined && { endDate: body.endDate }),
     };
     if (Object.keys(updateData).length === 0) {
-      throw new ApiError(400, 'Tidak ada field yang diupdate');
+      throw new ApiError(httpStatusCode.BAD_REQUEST, 'Tidak ada field yang diupdate');
     }
     const semester = await prisma.semester.update({
       where: { id: existingSemester.id },

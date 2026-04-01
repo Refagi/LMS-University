@@ -3,7 +3,7 @@ import { ApiError } from '@/utils/ApiError.js';
 import { catchAsync } from '../../utils/catchAsync.js';
 import { AdminSemesterService } from '@/services/index.js';
 import { type  Context } from 'hono'
-import type { ParamSemesterId, CreateSemesterBody, ActivateSemesterBody } from '@/validations/admin.validation.js';
+import type { ParamSemesterId, CreateSemesterBody, ActivateSemesterBody, UpdateSemesterBody } from '@/validations/admin.validation.js';
 
 
 class AdminSemesterController {
@@ -36,7 +36,7 @@ class AdminSemesterController {
 
   static updateSemester = catchAsync(async (c: Context) => {
     const { semesterId } = c.get('parsedParam') as ParamSemesterId;
-    const body = c.get('parsedJson') as CreateSemesterBody;
+    const body = c.get('parsedJson') as UpdateSemesterBody;
     const semester = await AdminSemesterService.updateSemester({semesterId, ...body});
     return c.json({message: 'Semester berhasil diperbarui!', status: httpStatusCode.OK, data: semester})
   })
